@@ -1,0 +1,17 @@
+export const client = {
+  name: 'Demo Business',
+  tagline: 'Professional landscaping services',
+  phone: '(949) 555-0100',
+  email: 'hello@demo.com',
+  address: '123 Main St',
+  city: 'Irvine',
+  state: 'CA',
+  serviceArea: ['Irvine', 'Newport Beach', 'Laguna Hills'],
+  primaryColor: '#2d5a3d',
+  industry: 'landscaping',
+  services: ['Lawn Mowing', 'Garden Design', 'Irrigation', 'Fertilization'],
+  cmsUrl: 'https://cms.sebvia.com',
+  tenantSlug: 'demo',
+  googleAnalyticsId: '',
+  domain: 'demo.sebvia.com',
+}
