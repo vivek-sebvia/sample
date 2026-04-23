@@ -1,0 +1,77 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="404 - Page Not Found">
+  <div class="error-container">
+    <div class="error-content">
+      <h1 class="error-code">404</h1>
+      <div class="error-line"></div>
+      <h2 class="error-text">Oops! Page Not Found</h2>
+      <p class="error-desc">The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+      <a href="/" class="back-home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Home
+      </a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .error-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fdfdfc;
+    padding: 2rem;
+  }
+  .error-content {
+    text-align: center;
+    max-width: 500px;
+  }
+  .error-code {
+    font-size: 10rem;
+    font-weight: 900;
+    color: #0a1e0f;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -5px;
+    opacity: 0.1;
+  }
+  .error-line {
+    width: 60px;
+    height: 4px;
+    background: #a8cf45;
+    margin: 2rem auto;
+    border-radius: 2px;
+  }
+  .error-text {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0a1e0f;
+    margin-bottom: 1rem;
+  }
+  .error-desc {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin-bottom: 2.5rem;
+  }
+  .back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: #0a1e0f;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .back-home:hover {
+    background: #a8cf45;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(168,207,69,0.2);
+  }
+</style>

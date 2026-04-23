@@ -13,39 +13,399 @@ const primary = client.primaryColor || '#2d5a3d'
 
 <Layout title="Gallery" description={`View our work — ${client.name} project gallery.`}>
 
-  <section style={`padding:4rem 1.5rem;background:${primary}12;text-align:center`}>
-    <div style="max-width:1200px;margin:0 auto">
-      <h1 style="font-size:2.5rem;font-weight:800;margin-bottom:1rem">Our Work</h1>
-      <p style="color:#6b7280;font-size:1.05rem">Browse photos from our recent projects.</p>
+  <!-- Hero Section -->
+  <section class="page-hero">
+    <div class="overlay"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">Our Work</h1>
+      <p class="hero-description">
+        Browse photos from our recent projects and see the quality we bring to every home.
+      </p>
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span class="separator">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </span>
+        <span class="current">Gallery</span>
+      </div>
     </div>
   </section>
 
-  <section style="padding:4rem 1.5rem">
-    <div style="max-width:1200px;margin:0 auto">
-      {gallery.length > 0 ? (
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem">
-          {gallery.map((item: any) => (
-            <div style="border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-              {item.image?.url && <img src={item.image.url} alt={item.title || 'Project'} style="width:100%;aspect-ratio:4/3;object-fit:cover" />}
-              {item.title && <div style="padding:0.75rem 1rem;font-weight:500;font-size:0.9rem">{item.title}</div>}
+  <section class="gl-section">
+    <div class="gl-container">
+      <div class="gl-grid">
+        {
+          (gallery.length > 0 ? gallery : [
+            { title: "Modern Fire Pit Garden", img: "/images/gallery/fire-pit.png" },
+            { title: "Luxury Lawn Stripes", img: "/images/gallery/lawn-stripes.png" },
+            { title: "Stone Waterfall Feature", img: "/images/gallery/waterfall.png" },
+            { title: "Designer Pergola Seating", img: "/images/gallery/pergola.png" },
+            { title: "Premium Turf & Lighting", img: "/images/gallery/turf-lighting.png" },
+            { title: "Zen Succulent Landscape", img: "/images/gallery/zen-garden.png" }
+          ]).map((item: any, index: number) => (
+            <div class="gl-item" style={`animation-delay: ${index * 100}ms`}>
+              <div class="gl-image-wrapper">
+                <img 
+                  src={item.image?.url || item.img} 
+                  alt={item.title || "Project Photo"} 
+                  loading="lazy"
+                />
+                <div class="gl-overlay">
+                  <span class="gl-view-btn">View Details</span>
+                </div>
+              </div>
+              <div class="gl-info">
+                <h3 class="gl-title">{item.title || "Landscaping Project"}</h3>
+                <p class="gl-tag">Residential</p>
+              </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <div style="text-align:center;padding:4rem;color:#6b7280">
-          <div style="font-size:4rem;margin-bottom:1rem">📸</div>
-          <p style="font-size:1.1rem;font-weight:500;margin-bottom:0.5rem">Photos coming soon!</p>
-          <p style="font-size:0.875rem">Check back for project photos from our team.</p>
-        </div>
-      )}
+          ))
+        }
+      </div>
     </div>
   </section>
 
-  <section style={`padding:4rem 1.5rem;background:${primary};color:#fff;text-align:center`}>
-    <div style="max-width:700px;margin:0 auto">
-      <h2 style="font-size:1.75rem;font-weight:700;margin-bottom:1rem">Like What You See?</h2>
-      <a href="/contact" style="background:#fff;color:#111;padding:0.75rem 2rem;border-radius:10px;font-weight:700">Get Free Quote</a>
+  <style>
+    .gl-section {
+      padding: 80px 0 120px;
+      background-color: #ffffff;
+    }
+    .gl-container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      box-sizing: border-box;
+    }
+    .gl-grid {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 3rem;
+      width: 100%;
+    }
+    .gl-item {
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: glReveal 0.6s ease-out forwards;
+    }
+    @keyframes glReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .gl-image-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 75%; /* 4:3 Aspect Ratio fallback */
+      border-radius: 24px;
+      overflow: hidden;
+      background: #f0f2ea;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+    }
+    .gl-image-wrapper img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .gl-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 30, 15, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(4px);
+      z-index: 2;
+    }
+    .gl-view-btn {
+      background: #ffffff;
+      color: #0a1e0f;
+      padding: 0.8rem 1.6rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transform: translateY(15px);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .gl-item:hover .gl-image-wrapper img {
+      transform: scale(1.08);
+    }
+    .gl-item:hover .gl-overlay {
+      opacity: 1;
+    }
+    .gl-item:hover .gl-view-btn {
+      transform: translateY(0);
+    }
+    .gl-info {
+      margin-top: 1.5rem;
+      padding: 0 0.5rem;
+    }
+    .gl-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #0a1e0f;
+      margin: 0 0 0.4rem 0;
+      line-height: 1.2;
+    }
+    .gl-tag {
+      font-size: 0.9rem;
+      color: #a8cf45;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+
+    @media (max-width: 1100px) {
+      .gl-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 2rem;
+      }
+    }
+    @media (max-width: 768px) {
+      .gl-grid {
+        grid-template-columns: 1fr !important;
+        gap: 2.5rem;
+      }
+      .gl-section { padding: 60px 0; }
+      .gl-container { padding: 0 1.5rem; }
+    }
+  </style>
+
+  <section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="container cta-container">
+      <div class="cta-content">
+        <h2 class="cta-title">Like What You See?</h2>
+        <p class="cta-desc">
+          Contact us today to start your own project. Our team in {client.city} is ready to bring your vision to life.
+        </p>
+        <div class="cta-actions">
+          <a href="/contact" class="cta-primary-btn">Get Free Quote</a>
+          <a href={`tel:${client.phone}`} class="cta-phone-link">
+            <div class="phone-icon-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <span class="phone-text">{client.phone}</span>
+          </a>
+        </div>
+      </div>
     </div>
+    
+    <!-- Decorative Elements -->
+    <div class="cta-decoration-left">
+      <img src="/images/services/landscape-design.png" alt="" />
+    </div>
+    <div class="cta-decoration-right">
+       <img src="/images/services/garden-installation.png" alt="" />
+    </div>
+    <div class="cta-grass-border"></div>
   </section>
+
+  <style>
+    .page-hero {
+      position: relative;
+      background: url('/images/hero-bg.png') center/cover no-repeat;
+      padding: 180px 0 100px;
+      text-align: center;
+      color: white;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(10, 30, 15, 0.7), rgba(10, 30, 15, 0.5));
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    .hero-title {
+      font-size: clamp(3rem, 10vw, 5rem);
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+      text-transform: capitalize;
+    }
+    .hero-description {
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 700px;
+      margin: 0 auto 20px auto;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .breadcrumbs a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .breadcrumbs a:hover {
+      color: #c7e57c;
+    }
+    .separator {
+      color: #c7e57c;
+      display: flex;
+      align-items: center;
+    }
+    .current {
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .page-hero {
+        padding: 140px 0 60px;
+        min-height: 300px;
+      }
+      .hero-title {
+        font-size: 2.5rem;
+      }
+    }
+
+    .cta-section {
+      position: relative;
+      padding: 140px 0 100px;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/hero-bg.png') center/cover no-repeat;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+    .cta-container {
+      position: relative;
+      z-index: 5;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .cta-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .cta-desc {
+      font-size: 1.2rem;
+      opacity: 0.95;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    .cta-primary-btn {
+      background: #a8cf45;
+      color: white;
+      padding: 1.1rem 2.8rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(168, 207, 69, 0.3);
+    }
+    .cta-primary-btn:hover {
+      background: #96bb3d;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(168, 207, 69, 0.4);
+    }
+    .cta-phone-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.5rem;
+      transition: opacity 0.3s ease;
+    }
+    .cta-phone-link:hover {
+      opacity: 0.8;
+    }
+    .phone-icon-circle {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .cta-decoration-left {
+      position: absolute;
+      bottom: -20px;
+      left: -2%;
+      width: 420px;
+      z-index: 2;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+    }
+    .cta-decoration-right {
+      position: absolute;
+      bottom: -40px;
+      right: -2%;
+      width: 380px;
+      z-index: 2;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+    }
+    .cta-decoration-left img, .cta-decoration-right img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .cta-grass-border {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: #0a1e0f;
+      z-index: 10;
+      clip-path: polygon(0% 100%, 100% 100%, 100% 30%, 98% 45%, 96% 25%, 94% 40%, 92% 20%, 90% 35%, 88% 15%, 86% 30%, 84% 10%, 82% 25%, 80% 5%, 78% 20%, 76% 0%, 74% 15%, 72% 0%, 70% 15%, 68% 5%, 66% 20%, 64% 10%, 62% 25%, 60% 15%, 58% 30%, 56% 15%, 54% 35%, 52% 20%, 50% 40%, 48% 25%, 46% 45%, 44% 30%, 42% 50%, 40% 35%, 38% 55%, 36% 40%, 34% 60%, 32% 45%, 30% 65%, 28% 50%, 26% 70%, 24% 55%, 22% 75%, 20% 60%, 18% 80%, 16% 65%, 14% 85%, 12% 70%, 10% 90%, 8% 75%, 6% 95%, 4% 80%, 2% 100%, 0% 85%);
+    }
+
+    @media (max-width: 992px) {
+      .cta-decoration-left, .cta-decoration-right {
+        display: none;
+      }
+      .cta-section { padding: 80px 0; }
+      .cta-actions {
+        flex-direction: column;
+        gap: 2rem;
+      }
+    }
+  </style>
 
 </Layout>

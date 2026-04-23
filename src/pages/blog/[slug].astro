@@ -3,52 +3,387 @@ import Layout from '../../layouts/Layout.astro'
 import { client } from '../../client.config.js'
 
 export async function getStaticPaths() {
+  const demoSlugs = [
+    'eco-friendly-landscaping',
+    'turf-maintenance-tips',
+    'best-plants-shady-areas',
+    'small-backyard-ideas',
+    'home-greenhouse-care',
+    'garden-flowers-blooming'
+  ];
+
+  const paths = demoSlugs.map(slug => ({
+    params: { slug },
+    props: { isDemo: true, post: null }
+  }));
+
   try {
-    const res = await fetch(
-      `${client.cmsUrl}/api/blog?where[tenant.slug][equals]=${client.tenantSlug}&limit=100`
-    )
-    const data = await res.json()
-    return (data.docs || []).map((post: any) => ({
-      params: { slug: post.slug },
-      props: { post },
-    }))
-  } catch {
-    return []
+    if (client.cmsUrl && client.tenantSlug) {
+      const res = await fetch(
+        `${client.cmsUrl}/api/blog?where[tenant.slug][equals]=${client.tenantSlug}&limit=100`
+      );
+      const data = await res.json();
+      const cmsPaths = (data.docs || []).map((p: any) => ({
+        params: { slug: p.slug },
+        props: { isDemo: false, post: p },
+      }));
+      return [...paths, ...cmsPaths];
+    }
+  } catch (e) {
+    console.error("CMS Fetch Error:", e);
   }
+  
+  return paths;
 }
 
-const { post } = Astro.props
-const primary = client.primaryColor || '#2d5a3d'
+const { post: cmsPost, isDemo } = Astro.props;
+const { slug } = Astro.params;
+
+// Demo content mapping
+const demoPosts: any = {
+  'eco-friendly-landscaping': {
+    title: "Eco-Friendly Landscaping Ideas You Can Start Today",
+    image: "/images/blog/blog-1.png",
+    date: "March 20, 2024",
+    category: "Eco Design",
+    tags: ["Eco", "Green", "Sustainable"],
+    content: `
+      <p>Your business absolutely needs an updated daily landscape strategy that respects the environment. In today's world, sustainability isn't just a trend—it's a responsibility. Eco-friendly landscaping focuses on native plants, water conservation, and soil health.</p>
+      <h3>Sustainable Practices for Modern Homes</h3>
+      <p>Utilizing native species is one of the most effective ways to reduce water usage and maintenance costs. These plants have adapted to the local climate over centuries, meaning they require fewer pesticides and less irrigation than exotic varieties.</p>
+    `
+  },
+  'turf-maintenance-tips': {
+    title: "Top 7 Turf Maintenance Tips for a Healthy Lawn",
+    image: "/images/blog/blog-2.png",
+    date: "March 18, 2024",
+    category: "Lawn Care",
+    tags: ["Lawn", "Gardening", "Maintenance"],
+    content: `
+      <p>Maintaining a lush green lawn requires more than just regular watering. From aeration to proper mowing heights, discover the professional secrets to a perfect turf.</p>
+      <h3>The Art of the Perfect Cut</h3>
+      <p>Mowing is the most frequent maintenance task. Setting your mower to the right height—typically 2.5 to 3 inches—helps the grass develop deeper roots and shade the soil, reducing water evaporation.</p>
+    `
+  },
+  'best-plants-shady-areas': {
+    title: "The Best Plants for Shady Areas in Your Backyard",
+    image: "/images/blog/blog-3.png",
+    date: "March 15, 2024",
+    category: "Planting",
+    tags: ["Shade", "Flowers", "Design"],
+    content: `
+      <p>Turn those dark corners into vibrant garden spots with our top shade-loving plant recommendations. Just because an area lacks direct sunlight doesn't mean it can't be beautiful.</p>
+      <h3>Lush Greenery in the Shadows</h3>
+      <p>Ferns, Hostas, and Bleeding Hearts are perfect candidates for shady spots. They thrive in diffused light and bring a variety of textures and colors to otherwise neglected parts of your garden.</p>
+    `
+  },
+  'small-backyard-ideas': {
+    title: "Creative Backyard Landscaping Ideas for Small Spaces",
+    image: "/images/blog/blog-4.png",
+    date: "March 12, 2024",
+    category: "Small Spaces",
+    tags: ["Backyard", "Space", "Modern"],
+    content: `
+      <p>Maximize your outdoor living area with these smart design hacks. Even the smallest patio can feel like a private oasis with the right furniture and plant placement.</p>
+      <h3>Vertical Thinking</h3>
+      <p>When ground space is limited, look up. Vertical gardens and climbing vines can add lush greenery without taking up precious floor space, making your backyard feel larger and more enclosed.</p>
+    `
+  },
+  'home-greenhouse-care': {
+    title: "How To Care For Plants Inside A Home Greenhouse",
+    image: "/images/blog/blog-5.png",
+    date: "March 10, 2024",
+    category: "Greenhouse",
+    tags: ["Indoor", "Care", "Greenhouse"],
+    content: `
+      <p>Learn the essentials of temperature control and humidity for a thriving indoor plant greenhouse. Consistency is key when it comes to managed environments.</p>
+      <h3>Climate Control Secrets</h3>
+      <p>Proper ventilation is crucial to prevent mold and ensure your plants get enough carbon dioxide. Automated venting systems and circulating fans can help maintain the perfect balance.</p>
+    `
+  },
+  'garden-flowers-blooming': {
+    title: "Essential Tips To Keep Your Garden Flowers Blooming",
+    image: "/images/blog/blog-6.png",
+    date: "March 08, 2024",
+    category: "Gardening",
+    tags: ["Flowers", "Bloom", "Tips"],
+    content: `
+      <p>Expert advice on seasonal pruning and fertilization to ensure continuous floral displays. A little bit of regular attention goes a long way in a blooming garden.</p>
+      <h3>Deadheading for Success</h3>
+      <p>Removing spent flowers, a process called deadheading, encourages the plant to put energy into new blooms rather than seed production, extending your garden's beauty for weeks.</p>
+    `
+  }
+};
+
+const post = isDemo ? (demoPosts[slug as string] || demoPosts['eco-friendly-landscaping']) : cmsPost;
+const primary = client.primaryColor || '#2d5a3d';
 ---
 
 <Layout title={post?.title || 'Blog Post'}>
 
-  <section style={`padding:4rem 1.5rem;background:${primary}12`}>
-    <div style="max-width:800px;margin:0 auto">
-      <a href="/blog" style={`color:${primary};font-size:0.9rem;font-weight:500`}>← Back to Blog</a>
-      <h1 style="font-size:2.25rem;font-weight:800;margin:1rem 0 0.5rem;line-height:1.25">{post?.title || 'Blog Post'}</h1>
-      {post?.createdAt && (
-        <p style="color:#6b7280;font-size:0.875rem">
-          {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-        </p>
-      )}
-    </div>
-  </section>
-
-  <section style="padding:3rem 1.5rem">
-    <div style="max-width:800px;margin:0 auto">
-      {post?.image?.url && (
-        <div style="border-radius:12px;overflow:hidden;margin-bottom:2rem;aspect-ratio:16/9">
-          <img src={post.image.url} alt={post.title} style="width:100%;height:100%;object-fit:cover" />
-        </div>
-      )}
-      <div style="font-size:1.05rem;line-height:1.8;color:#374151" set:html={post?.content || '<p>Content coming soon.</p>'} />
-      <div style={`margin-top:3rem;padding:1.5rem;border-radius:12px;background:${primary}12`}>
-        <h3 style="font-weight:700;margin-bottom:0.5rem">Ready to get started?</h3>
-        <p style="color:#4b5563;margin-bottom:1rem">Contact {client.name} for a free, no-obligation estimate.</p>
-        <a href="/contact" style={`background:${primary};color:#fff;padding:0.6rem 1.5rem;border-radius:8px;font-weight:600`}>Get Free Quote</a>
+  <!-- Blog Hero -->
+  <section class="blog-hero">
+    <div class="overlay"></div>
+    <div class="container hero-content">
+      <div class="meta-top reveal-item">
+        <span class="category-tag">{post.category || 'Landscaping'}</span>
+        <span class="dot"></span>
+        <span class="date">{post.date || (post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'March 2024')}</span>
+      </div>
+      <h1 class="hero-title reveal-item" style="transition-delay: 100ms;">{post?.title}</h1>
+      <div class="breadcrumbs reveal-item" style="transition-delay: 200ms;">
+        <a href="/">Home</a>
+        <span class="sep">/</span>
+        <a href="/blog">Blog</a>
+        <span class="sep">/</span>
+        <span class="curr">{post.title}</span>
       </div>
     </div>
   </section>
+
+  <style>
+    .blog-hero {
+      position: relative;
+      background: url('/images/hero-bg.png') center/cover no-repeat;
+      padding: 160px 0 100px;
+      text-align: center;
+      color: white;
+      min-height: 450px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(10, 30, 15, 0.8), rgba(10, 30, 15, 0.6));
+      z-index: 1;
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
+    .meta-top { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .category-tag { background: #a8cf45; color: #0a1e0f; padding: 0.4rem 1rem; border-radius: 8px; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; }
+    .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; }
+    .date { color: rgba(255,255,255,0.8); font-weight: 500; font-size: 1rem; }
+    .hero-title { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.1; letter-spacing: -0.04em; margin-bottom: 2rem; }
+    .breadcrumbs { display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-size: 1rem; color: rgba(255,255,255,0.7); font-weight: 600; }
+    .breadcrumbs a { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .breadcrumbs a:hover { color: #a8cf45; }
+    .sep { color: #a8cf45; }
+    .curr { color: white; }
+
+    /* Scroll Reveal */
+    .reveal-item { opacity: 0; transform: translateY(30px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal-item.active { opacity: 1; transform: translateY(0); }
+
+    .blog-section { padding: 100px 0; background: #ffffff; }
+    .blog-container { max-width: 1300px; margin: 0 auto; padding: 0 2rem; display: grid; grid-template-columns: 1fr 380px; gap: 4rem; }
+
+    /* Content Area */
+    .blog-main-image { border-radius: 32px; overflow: hidden; margin-bottom: 3.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
+    .blog-main-image img { width: 100%; height: auto; display: block; }
+    
+    .article-body { font-size: 1.2rem; line-height: 1.8; color: #374151; }
+    .article-body h2, .article-body h3 { color: #0a1e0f; font-weight: 800; margin: 3rem 0 1.5rem; }
+    .article-body h2 { font-size: 2.2rem; }
+    .article-body h3 { font-size: 1.7rem; }
+    .article-body p { margin-bottom: 1.8rem; }
+    
+    .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 3.5rem 0; }
+    .gallery-item { border-radius: 24px; overflow: hidden; height: 300px; }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+    .bottom-meta { padding-top: 3rem; margin-top: 5rem; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .post-tags { display: flex; gap: 0.8rem; }
+    .tag { background: #f7f9f5; color: #4b5563; padding: 0.5rem 1.2rem; border-radius: 12px; font-weight: 600; font-size: 0.9rem; transition: all 0.3s; }
+    .tag:hover { background: #a8cf45; color: #0a1e0f; }
+
+    /* Sidebar */
+    .sidebar-widget { background: #fdfdfc; padding: 2.5rem; border-radius: 32px; margin-bottom: 2.5rem; border: 1px solid #f2f4f0; }
+    .widget-title { font-size: 1.4rem; font-weight: 800; color: #0a1e0f; margin-bottom: 2rem; position: relative; padding-bottom: 1rem; }
+    .widget-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 4px; background: #a8cf45; border-radius: 2px; }
+
+    .search-box { position: relative; }
+    .search-box input { width: 100%; background: #ffffff; border: 1px solid #e5e7eb; padding: 1.2rem 1.5rem; border-radius: 16px; font-size: 1rem; outline: none; transition: border-color 0.3s; }
+    .search-box input:focus { border-color: #a8cf45; }
+    .search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #a8cf45; color: #0a1e0f; border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    .recent-post-item { display: flex; gap: 1.2rem; margin-bottom: 1.8rem; text-decoration: none; align-items: center; }
+    .rp-img { width: 85px; height: 85px; border-radius: 16px; overflow: hidden; flex-shrink: 0; }
+    .rp-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .recent-post-item:hover .rp-img img { transform: scale(1.1); }
+    .rp-info h4 { font-size: 1rem; font-weight: 700; color: #0a1e0f; line-height: 1.4; margin-bottom: 0.4rem; transition: color 0.3s; }
+    .recent-post-item:hover h4 { color: #a8cf45; }
+    .rp-date { font-size: 0.85rem; color: #6b7280; }
+
+    .cat-list { list-style: none; padding: 0; }
+    .cat-list li { margin-bottom: 1rem; }
+    .cat-list a { display: flex; align-items: center; gap: 1rem; text-decoration: none; color: #4b5563; font-weight: 600; font-size: 1.05rem; transition: all 0.3s; }
+    .cat-list a:hover { color: #a8cf45; transform: translateX(5px); }
+    .cat-list a::before { content: '→'; color: #a8cf45; font-weight: 800; }
+
+    /* Comment Form */
+    .comment-section { margin-top: 6rem; }
+    .comment-title { font-size: 2.2rem; font-weight: 800; color: #0a1e0f; margin-bottom: 3rem; }
+    .comment-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .full-width { grid-column: span 2; }
+    .comment-form textarea, .comment-form input { width: 100%; background: #f9fafb; border: 1px solid #e5e7eb; padding: 1.2rem 1.5rem; border-radius: 16px; font-size: 1rem; outline: none; transition: all 0.3s; }
+    .comment-form textarea { height: 180px; resize: none; }
+    .comment-form input:focus, .comment-form textarea:focus { border-color: #a8cf45; background: #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+    .submit-btn { background: #a8cf45; color: #0a1e0f; border: none; padding: 1.2rem 2.5rem; border-radius: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s; margin-top: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .submit-btn:hover { background: #0a1e0f; color: #fff; transform: translateY(-3px); }
+
+    @media (max-width: 1100px) {
+      .blog-container { grid-template-columns: 1fr; gap: 5rem; }
+      .sidebar { order: 2; }
+    }
+    @media (max-width: 768px) {
+      .blog-section { padding: 60px 0; }
+      .comment-form { grid-template-columns: 1fr; }
+      .full-width { grid-column: span 1; }
+      .hero-title { font-size: 2.5rem; }
+    }
+  </style>
+
+  <div class="blog-section">
+    <div class="blog-container">
+      <!-- Main Content -->
+      <main class="blog-content">
+        <div class="blog-main-image reveal-item">
+          <img src={post.image || (post.image?.url)} alt={post.title} />
+        </div>
+
+        <div class="article-body reveal-item" style="transition-delay: 200ms;">
+          <div set:html={post.content || '<p>Detailed article content coming soon.</p>'} />
+          
+          <div class="gallery-grid">
+            <div class="gallery-item">
+              <img src="/images/blog/detail-1.png" alt="Detail 1" />
+            </div>
+            <div class="gallery-item">
+              <img src="/images/blog/detail-2.png" alt="Detail 2" />
+            </div>
+          </div>
+          
+          <h2>Latest News & More Information</h2>
+          <p>We are committed to providing the most up-to-date landscaping information. Our team of experts works tirelessly to test new methods and technologies in the field.</p>
+          <ul>
+            <li>Sustainable irrigation systems that save up to 40% more water.</li>
+            <li>Native plant pairings for year-round color.</li>
+            <li>Organic soil enrichment techniques.</li>
+          </ul>
+        </div>
+
+        <div class="bottom-meta reveal-item">
+          <div class="post-tags">
+            {post.tags?.map((t: string) => (
+              <span class="tag">#{t}</span>
+            ))}
+          </div>
+        </div>
+
+        <!-- Comment Section -->
+        <section class="comment-section reveal-item">
+          <h2 class="comment-title">Leave A Comment</h2>
+          <form class="comment-form">
+            <textarea placeholder="Write your comment here..." class="full-width"></textarea>
+            <input type="text" placeholder="Your Name" required />
+            <input type="email" placeholder="Email Address" required />
+            <div class="full-width" style="display:flex; align-items:center; gap:0.8rem; margin-top:0.5rem">
+              <input type="checkbox" id="save-info" style="width:20px; height:20px; margin:0" />
+              <label for="save-info" style="color:#6b7280; font-size:0.95rem">Save my name and email in this browser for the next time I comment.</label>
+            </div>
+            <button type="submit" class="submit-btn">Post Comment</button>
+          </form>
+        </section>
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="sidebar reveal-item" style="transition-delay: 300ms;">
+        <!-- Search Widget -->
+        <div class="sidebar-widget">
+          <div class="search-box">
+            <input type="text" placeholder="Search here..." />
+            <button class="search-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Posts Widget -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">Recent Posts</h3>
+          <div class="recent-posts-list">
+            <a href="/blog/eco-friendly-landscaping" class="recent-post-item">
+              <div class="rp-img"><img src="/images/blog/blog-1.png" alt="RP 1" /></div>
+              <div class="rp-info">
+                <h4>Eco-Friendly Landscaping Ideas</h4>
+                <span class="rp-date">March 20, 2024</span>
+              </div>
+            </a>
+            <a href="/blog/turf-maintenance-tips" class="recent-post-item">
+              <div class="rp-img"><img src="/images/blog/blog-2.png" alt="RP 2" /></div>
+              <div class="rp-info">
+                <h4>Top 7 Turf Maintenance Tips</h4>
+                <span class="rp-date">March 18, 2024</span>
+              </div>
+            </a>
+            <a href="/blog/best-plants-shady-areas" class="recent-post-item">
+              <div class="rp-img"><img src="/images/blog/blog-3.png" alt="RP 3" /></div>
+              <div class="rp-info">
+                <h4>Best Plants for Shady Areas</h4>
+                <span class="rp-date">March 15, 2024</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Categories Widget -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">Categories</h3>
+          <ul class="cat-list">
+            <li><a href="#">Garden</a></li>
+            <li><a href="#">Landscaping</a></li>
+            <li><a href="#">Design</a></li>
+            <li><a href="#">Lawn Care</a></li>
+            <li><a href="#">Hardscape</a></li>
+          </ul>
+        </div>
+
+        <!-- Tags Widget -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">Popular Tags</h3>
+          <div class="post-tags">
+            <a href="#" class="tag">Flowers</a>
+            <a href="#" class="tag">Backyard</a>
+            <a href="#" class="tag">Patio</a>
+            <a href="#" class="tag">Maintenance</a>
+            <a href="#" class="tag">Eco</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Intersection Observer for Scroll Reveals
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        } else {
+          entry.target.classList.remove('active');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal-item').forEach(item => {
+      observer.observe(item);
+    });
+  </script>
 
 </Layout>

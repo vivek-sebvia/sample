@@ -1,0 +1,441 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { client } from '../../client.config.js'
+
+export async function getStaticPaths() {
+  const slugify = (text: string) => text.toLowerCase().trim().replace(/\s+/g, '-');
+  
+  const demoPaths = [
+    { params: { slug: 'landscape-design' }, props: { isDemo: true, service: null } },
+    { params: { slug: 'lawn-care' }, props: { isDemo: true, service: null } },
+    { params: { slug: 'garden-design' }, props: { isDemo: true, service: null } },
+    { params: { slug: 'irrigation' }, props: { isDemo: true, service: null } },
+    { params: { slug: 'tree-trimming' }, props: { isDemo: true, service: null } },
+    { params: { slug: 'mulching' }, props: { isDemo: true, service: null } },
+    { params: { slug: 'sod-installation' }, props: { isDemo: true, service: null } },
+    { params: { slug: 'leaf-removal' }, props: { isDemo: true, service: null } }
+  ];
+
+  try {
+    if (client.cmsUrl && client.tenantSlug) {
+      const res = await fetch(
+        `${client.cmsUrl}/api/services?where[tenant.slug][equals]=${client.tenantSlug}&limit=100`
+      );
+      const data = await res.json();
+      const cmsPaths = (data.docs || []).map((s: any) => ({
+        params: { slug: s.slug || slugify(s.title) },
+        props: { isDemo: false, service: s },
+      }));
+      return [...demoPaths, ...cmsPaths];
+    }
+  } catch (e) {
+    console.error("CMS Services Fetch Error:", e);
+  }
+  
+  return demoPaths;
+}
+
+const { service: cmsService, isDemo } = Astro.props;
+const { slug } = Astro.params;
+
+// Demo Service Mapping
+const demoServices: any = {
+  'landscape-design': {
+    title: "Landscape Design & Planning",
+    image: "/images/services/landscape-design.png",
+    description: "Transform your outdoor space with our professional landscape design and planning services.",
+    content: `
+      <p>Landscape design is the art of arranging or modifying the features of a yard, an urban area, or other space for aesthetic or practical reasons. For organizational purposes, it is often divided into two hardscape and softscape.</p>
+      <h3>Professional Landscaping Services</h3>
+      <p>Our team of expert designers works closely with you to understand your vision and bring it to life. We consider everything from soil quality and drainage to sunlight patterns and local climate to ensure your garden thrives year-round.</p>
+    `,
+    process: [
+      { id: "01", title: "Request A Service", desc: "Contact us to discuss your project requirements and schedule a site visit." },
+      { id: "02", title: "Service Planning", desc: "Our designers create a detailed plan and visualization of your new landscape." },
+      { id: "03", title: "Quality Control", desc: "We source the finest materials and plants to ensure long-lasting beauty." },
+      { id: "04", title: "Follow-up & Support", desc: "We provide maintenance tips and ongoing support to keep your garden perfect." }
+    ],
+    faqs: [
+      { q: "How long does turf installation take?", a: "Typically, most residential turf installations take between 1 to 3 days depending on the size of the area and preparation needed." },
+      { q: "Do you offer seasonal maintenance?", a: "Yes, we provide comprehensive seasonal care including pruning, fertilization, and winter protection." }
+    ]
+  },
+  'lawn-care': {
+    title: "Lawn Care & Maintenance",
+    image: "/images/services/lawn-care.png",
+    description: "Keep your lawn healthy and green all year round with our professional maintenance packages.",
+    content: "<p>A healthy lawn is the foundation of a beautiful garden. Our maintenance services include mowing, edging, fertilization, and weed control.</p>",
+    process: [
+      { id: "01", title: "Site Assessment", desc: "We evaluate your lawn's health and identify any issues like pests or nutrient deficiencies." },
+      { id: "02", title: "Custom Plan", desc: "We create a tailored maintenance schedule based on your lawn's specific needs." },
+      { id: "03", title: "Execution", desc: "Our team performs regular visits to ensure consistent care and healthy growth." },
+      { id: "04", title: "Results Tracking", desc: "We monitor progress and adjust the plan as seasons change." }
+    ],
+    faqs: [
+      { q: "How often should I mow my lawn?", a: "Most lawns benefit from weekly mowing during the peak growing season to maintain a healthy height." },
+      { q: "What fertilizers do you use?", a: "We use high-quality organic-based fertilizers that are safe for pets and children." }
+    ]
+  },
+  'garden-design': {
+    title: "Garden Design",
+    image: "/images/blog/blog-3.png",
+    description: "Expert garden design that brings color and life to your property.",
+    content: "<p>Our garden design services focus on creating vibrant, sustainable plant environments that reflect your personal style. We combine aesthetic beauty with ecological functionality.</p>",
+    process: [
+      { id: "01", title: "Inspiration", desc: "We gather your ideas, color preferences, and desired garden style." },
+      { id: "02", title: "Plant Selection", desc: "Choosing the right species for your soil type and sunlight levels." },
+      { id: "03", title: "Layout Design", desc: "Creating a balanced arrangement that looks beautiful year-round." },
+      { id: "04", title: "Planting Strategy", desc: "Ensuring proper depth and spacing for long-term growth and health." }
+    ],
+    faqs: [
+      { q: "What plants work best for low maintenance?", a: "We recommend native perennials and succulents that require minimal water and pruning." },
+      { q: "Do you design for small spaces?", a: "Yes, we specialize in vertical gardens and creative layouts for compact urban spaces." }
+    ]
+  },
+  'irrigation': {
+    title: "Irrigation Systems",
+    image: "/images/services/turfing.png",
+    description: "Smart watering solutions for a healthy, water-efficient landscape.",
+    content: "<p>We design and install advanced irrigation systems that ensure your plants get the exact amount of water they need while minimizing waste. Our smart controllers adjust for weather changes automatically.</p>",
+    process: [
+      { id: "01", title: "Flow Analysis", desc: "Measuring water pressure and determining the specific needs of each zone." },
+      { id: "02", title: "System Design", desc: "Mapping out sprinkler heads and drip lines for maximum coverage efficiency." },
+      { id: "03", title: "Installation", desc: "Professional installation with minimal disruption to your existing landscape." },
+      { id: "04", title: "Smart Setup", desc: "Programming your Wi-Fi controller for automated, weather-based watering." }
+    ],
+    faqs: [
+      { q: "Can I control my system from my phone?", a: "Yes, our smart controllers come with intuitive apps for remote management." },
+      { q: "How much water can I save?", a: "Properly designed smart systems can reduce water waste by up to 50% compared to manual watering." }
+    ]
+  },
+  'tree-trimming': {
+    title: "Tree Trimming",
+    image: "/images/services/landscape-design.png",
+    description: "Professional pruning for the health and safety of your trees.",
+    content: "<p>Our expert tree care services help maintain the structural integrity and aesthetic beauty of your trees. Proper pruning prevents disease and ensures property safety during storms.</p>",
+    process: [
+      { id: "01", title: "Safety Inspection", desc: "Checking for weak branches, rot, or proximity to power lines and structures." },
+      { id: "02", title: "Strategic Pruning", desc: "Removing deadwood and thinning the canopy to improve airflow and light." },
+      { id: "03", title: "Structural Shaping", desc: "Encouraging a strong, natural growth pattern for the tree's long-term health." },
+      { id: "04", title: "Clean Up", desc: "Thorough removal and chipping of all debris, leaving your yard spotless." }
+    ],
+    faqs: [
+      { q: "When is the best time to trim trees?", a: "While minor trimming can be done anytime, major pruning is often best done in late winter or early spring." },
+      { q: "Are you insured for tree work?", a: "Yes, we are fully licensed and insured for all high-altitude tree maintenance." }
+    ]
+  },
+  'mulching': {
+    title: "Mulching Services",
+    image: "/images/blog/blog-4.png",
+    description: "Premium mulching to protect your soil and enhance garden beauty.",
+    content: "<p>Mulching is essential for moisture retention and weed control. We use high-quality organic mulch that enriches your soil as it breaks down over time.</p>",
+    process: [
+      { id: "01", title: "Bed Preparation", desc: "Clearing existing weeds and edging the beds for a clean, professional finish." },
+      { id: "02", title: "Soil Enrichment", desc: "Adding organic compost where needed to boost nutrient levels before mulching." },
+      { id: "03", title: "Mulch Application", desc: "Spreading a consistent 2-3 inch layer for optimal moisture and temperature control." },
+      { id: "04", title: "Edge Finishing", desc: "Refining the trench edges to prevent mulch from washing onto paths or lawn." }
+    ],
+    faqs: [
+      { q: "How often should I refresh my mulch?", a: "For best results, we recommend a fresh application once or twice a year, typically in spring or fall." },
+      { q: "What types of mulch do you offer?", a: "We offer various types including shredded hardwood, cedar, and premium colored mulches." }
+    ]
+  },
+  'sod-installation': {
+    title: "Sod Installation",
+    image: "/images/services/garden-installation.png",
+    description: "Instant green lawns with our professional sod installation.",
+    content: "<p>Get a perfect lawn in a single day with our high-quality sod selection and expert installation team. We handle everything from grading to the first watering.</p>",
+    process: [
+      { id: "01", title: "Surface Grading", desc: "Leveling the ground to ensure proper drainage and a perfectly flat lawn surface." },
+      { id: "02", title: "Soil Prep", desc: "Tilling the soil and adding starter fertilizer to encourage rapid root growth." },
+      { id: "03", title: "Precision Laying", desc: "Installing fresh-cut sod in a staggered pattern to minimize visible seams." },
+      { id: "04", title: "Rolling & Watering", desc: "Using a heavy roller to ensure good soil contact followed by deep saturation." }
+    ],
+    faqs: [
+      { q: "How soon can I walk on my new sod?", a: "We recommend avoiding heavy traffic for at least 2 to 3 weeks while the roots establish." },
+      { q: "How much should I water after installation?", a: "Sod needs daily watering for the first two weeks to prevent drying and shrinking." }
+    ]
+  },
+  'leaf-removal': {
+    title: "Leaf Removal",
+    image: "/images/blog/blog-6.png",
+    description: "Efficient leaf clearing to keep your property clean and healthy.",
+    content: "<p>Don't let fallen leaves smother your grass. Our team provides quick and thorough removal services, preventing mold and keeping your lawn breathing.</p>",
+    process: [
+      { id: "01", title: "Clearing", desc: "Using high-powered blowers to move leaves from beds, lawn, and hardscapes." },
+      { id: "02", title: "Collection", desc: "Gathering leaves into central points for efficient loading and removal." },
+      { id: "03", title: "Vacuuming/Hauling", desc: "Removing all organic debris from the property so you don't have to deal with bags." },
+      { id: "04", title: "Final Polish", desc: "A final sweep of paths and driveways to ensure a perfectly clean look." }
+    ],
+    faqs: [
+      { q: "Can leaves harm my lawn?", a: "Yes, a thick layer of leaves can block sunlight and trap moisture, leading to fungal diseases." },
+      { q: "Do you take the leaves away?", a: "Absolutely! We haul away all collected debris as part of the service." }
+    ]
+  }
+};
+
+const service = isDemo ? (demoServices[slug as string] || demoServices['landscape-design']) : cmsService;
+const primary = client.primaryColor || '#2d5a3d';
+
+// Fallback process if not in service object
+const defaultProcess = [
+  { id: "01", title: "Request A Service", desc: "Contact us to discuss your project requirements and schedule a site visit." },
+  { id: "02", title: "Service Planning", desc: "Our designers create a detailed plan and visualization of your new landscape." },
+  { id: "03", title: "Quality Control", desc: "We source the finest materials and plants to ensure long-lasting beauty." },
+  { id: "04", title: "Follow-up & Support", desc: "We provide maintenance tips and ongoing support to keep your garden perfect." }
+];
+
+const serviceProcess = service.process || defaultProcess;
+---
+
+<Layout title={service?.title || 'Service'}>
+
+  <!-- Service Hero -->
+  <section class="service-hero">
+    <div class="overlay"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title reveal-item">{service?.title}</h1>
+      <div class="breadcrumbs reveal-item" style="transition-delay: 100ms;">
+        <a href="/">Home</a>
+        <span class="sep">/</span>
+        <span class="curr">{service?.title}</span>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .service-hero {
+      position: relative;
+      background: url('/images/hero-bg.png') center/cover no-repeat;
+      padding: 160px 0 100px;
+      text-align: center;
+      color: white;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(10, 30, 15, 0.8), rgba(10, 30, 15, 0.6));
+      z-index: 1;
+    }
+    .hero-content { position: relative; z-index: 2; }
+    .hero-title { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+    .breadcrumbs { display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-size: 1rem; color: rgba(255,255,255,0.7); font-weight: 600; }
+    .breadcrumbs a { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .breadcrumbs a:hover { color: #a8cf45; }
+    .sep { color: #a8cf45; }
+    .curr { color: white; }
+
+    /* Scroll Reveal */
+    .reveal-item { opacity: 0; transform: translateY(30px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal-item.active { opacity: 1; transform: translateY(0); }
+
+    .service-detail-section { padding: 100px 0; background: #fff; }
+    .service-container { max-width: 1300px; margin: 0 auto; padding: 0 2rem; display: grid; grid-template-columns: 380px 1fr; gap: 4rem; }
+
+    /* Sidebar */
+    .sidebar-widget { background: #fdfdfc; padding: 2.5rem; border-radius: 32px; margin-bottom: 2.5rem; border: 1px solid #f2f4f0; }
+    .widget-title { font-size: 1.4rem; font-weight: 800; color: #0a1e0f; margin-bottom: 2rem; position: relative; padding-bottom: 1rem; }
+    .widget-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 4px; background: #a8cf45; border-radius: 2px; }
+
+    .service-nav-list { list-style: none; padding: 0; }
+    .service-nav-list li { margin-bottom: 0.8rem; }
+    .service-nav-list a { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.5rem; background: #fff; border-radius: 16px; text-decoration: none; color: #4b5563; font-weight: 700; transition: all 0.3s; border: 1px solid #eee; }
+    .service-nav-list a.active, .service-nav-list a:hover { background: #a8cf45; color: #0a1e0f; border-color: #a8cf45; transform: translateX(5px); }
+    .service-nav-list a svg { transition: transform 0.3s; }
+    .service-nav-list a:hover svg { transform: translateX(5px); }
+
+    .cta-widget { background: linear-gradient(rgba(10,30,15,0.9), rgba(10,30,15,0.9)), url('/images/blog/blog-1.png') center/cover; padding: 3rem 2rem; border-radius: 32px; text-align: center; color: white; position: relative; overflow: hidden; }
+    .cta-icon { width: 60px; height: 60px; background: #a8cf45; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #0a1e0f; }
+    .cta-widget h4 { font-size: 1.6rem; font-weight: 800; margin-bottom: 1rem; }
+    .cta-widget p { font-size: 1rem; opacity: 0.8; margin-bottom: 2rem; line-height: 1.6; }
+    .cta-btn { display: inline-block; background: #fff; color: #0a1e0f; padding: 1rem 2rem; border-radius: 12px; font-weight: 800; text-decoration: none; transition: all 0.3s; }
+    .cta-btn:hover { background: #a8cf45; transform: translateY(-3px); }
+
+    /* Main Content */
+    .main-feature-img { border-radius: 32px; overflow: hidden; margin-bottom: 3.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
+    .main-feature-img img { width: 100%; height: auto; display: block; }
+
+    .content-body { font-size: 1.2rem; line-height: 1.8; color: #374151; }
+    .content-body h2 { font-size: 2.2rem; font-weight: 900; color: #0a1e0f; margin: 3rem 0 1.5rem; }
+    .content-body h3 { font-size: 1.6rem; font-weight: 800; color: #0a1e0f; margin: 2rem 0 1rem; }
+    
+    .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 3.5rem 0; }
+    .gallery-item { border-radius: 24px; overflow: hidden; height: 280px; }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Process Section */
+    .process-section { margin-top: 5rem; }
+    .process-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-top: 3rem; }
+    .process-card { background: #fdfdfc; padding: 2.5rem; border-radius: 24px; border: 1px solid #f2f4f0; transition: all 0.3s; }
+    .process-card:hover { border-color: #a8cf45; transform: translateY(-5px); box-shadow: 0 15px 30px rgba(168,207,69,0.08); }
+    .process-num { width: 50px; height: 50px; background: #f0f4e8; color: #0a1e0f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem; margin-bottom: 1.5rem; transition: all 0.3s; }
+    .process-card:hover .process-num { background: #a8cf45; color: white; }
+    .process-card h4 { font-size: 1.3rem; font-weight: 800; color: #0a1e0f; margin-bottom: 1rem; }
+    .process-card p { font-size: 1rem; color: #6b7280; line-height: 1.6; }
+
+    /* FAQ Section */
+    .faq-section { margin-top: 6rem; }
+    .faq-item { background: #fdfdfc; border: 1px solid #f2f4f0; border-radius: 20px; margin-bottom: 1rem; overflow: hidden; }
+    .faq-question { width: 100%; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; background: none; border: none; font-size: 1.15rem; font-weight: 700; color: #0a1e0f; cursor: pointer; text-align: left; transition: all 0.3s; }
+    .faq-item.active .faq-question { background: #f0f4e8; color: #0a1e0f; }
+    .faq-answer { padding: 0 2rem; max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; }
+    .faq-item.active .faq-answer { padding: 1.5rem 2rem; max-height: 500px; }
+    .faq-answer p { font-size: 1rem; color: #6b7280; line-height: 1.7; margin: 0; }
+    .plus-icon { width: 24px; height: 24px; position: relative; transition: transform 0.3s; }
+    .plus-icon::before, .plus-icon::after { content: ''; position: absolute; background: #a8cf45; border-radius: 2px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .plus-icon::before { width: 14px; height: 2.5px; }
+    .plus-icon::after { width: 2.5px; height: 14px; transition: transform 0.3s; }
+    .faq-item.active .plus-icon { transform: rotate(45deg); }
+
+    @media (max-width: 1100px) {
+      .service-container { grid-template-columns: 1fr; gap: 5rem; }
+      .sidebar { order: 2; }
+    }
+    @media (max-width: 768px) {
+      .process-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 2.5rem; }
+    }
+  </style>
+
+  <div class="service-detail-section">
+    <div class="service-container">
+      
+      <!-- Sidebar -->
+      <aside class="sidebar reveal-item">
+        <!-- Service List Widget -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">Service List</h3>
+          <ul class="service-nav-list">
+            {client.services.map((s: string) => {
+              const sSlug = s.toLowerCase().trim().replace(/\s+/g, '-');
+              return (
+                <li>
+                  <a href={`/services/${sSlug}`} class={slug === sSlug ? 'active' : ''}>
+                    {s}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        <!-- CTA Widget -->
+        <div class="cta-widget reveal-item">
+          <div class="cta-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <h4>Need Our Expert Support?</h4>
+          <p>Contact us today for a free consultation and project estimate.</p>
+          <a href="/contact" class="cta-btn">Contact Us Now</a>
+        </div>
+
+        <!-- More Services Form Widget -->
+        <div class="sidebar-widget reveal-item" style="margin-top:2.5rem">
+          <h3 class="widget-title">Quick Inquiry</h3>
+          <form style="display:flex; flex-direction:column; gap:1rem">
+            <input type="text" placeholder="Your Name" style="padding:1rem; border-radius:12px; border:1px solid #eee; outline:none" />
+            <input type="email" placeholder="Email" style="padding:1rem; border-radius:12px; border:1px solid #eee; outline:none" />
+            <textarea placeholder="Tell us about your project" style="padding:1rem; border-radius:12px; border:1px solid #eee; outline:none; height:120px; resize:none"></textarea>
+            <button type="submit" style="background:#0a1e0f; color:#fff; padding:1rem; border-radius:12px; font-weight:800; border:none; cursor:pointer; transition:0.3s">Send Message</button>
+          </form>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="service-main">
+        <div class="main-feature-img reveal-item">
+          <img src={service?.image || '/images/blog/blog-1.png'} alt={service?.title} />
+        </div>
+
+        <div class="content-body reveal-item">
+          <div set:html={service?.content || `<p>${service?.description}</p>`} />
+          
+          <div class="gallery-grid">
+            <div class="gallery-item">
+              <img src="/images/blog/blog-3.png" alt="Detail 1" />
+            </div>
+            <div class="gallery-item">
+              <img src="/images/blog/blog-4.png" alt="Detail 2" />
+            </div>
+          </div>
+
+          <h2>Service Process</h2>
+          <div class="process-grid">
+            {serviceProcess.map((step: any) => (
+              <div class="process-card reveal-item">
+                <div class="process-num">{step.id}</div>
+                <h4>{step.title}</h4>
+                <p>{step.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div class="faq-section reveal-item">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-list">
+              {(service.faqs || [
+                { q: "How long does turf installation take?", a: "Typically, most residential turf installations take between 1 to 3 days depending on the size of the area and preparation needed." },
+                { q: "Do you offer seasonal maintenance?", a: "Yes, we provide comprehensive seasonal care including pruning, fertilization, and winter protection." }
+              ]).map((faq: any, index: number) => (
+                <div class="faq-item">
+                  <button class="faq-question">
+                    {faq.q}
+                    <span class="plus-icon"></span>
+                  </button>
+                  <div class="faq-answer">
+                    <p>{faq.a}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    // Intersection Observer for Scroll Reveals
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        } else {
+          entry.target.classList.remove('active');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal-item').forEach(item => {
+      observer.observe(item);
+    });
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = button.parentElement;
+        if (!item) return;
+        
+        const isActive = item.classList.contains('active');
+        
+        // Close all other items
+        document.querySelectorAll('.faq-item').forEach(otherItem => {
+          otherItem.classList.remove('active');
+        });
+
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+  </script>
+
+</Layout>

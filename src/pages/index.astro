@@ -1,121 +1,1038 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { client } from '../client.config.js'
+// index.astro
+import Layout from "../layouts/Layout.astro";
+import { client } from "../client.config.js";
 
-let services = []
-let testimonials = []
+// Helper to convert hex to RGB for CSS variables
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
+    : "45, 90, 61"; // fallback
+}
+
+const primaryRgb = hexToRgb(client.primaryColor || "#2d5a3d");
+
+let services = [];
+let testimonials = [];
 try {
   const [s, t] = await Promise.all([
-    fetch(`${client.cmsUrl}/api/services?where[tenant.slug][equals]=${client.tenantSlug}&limit=6`),
-    fetch(`${client.cmsUrl}/api/testimonials?where[tenant.slug][equals]=${client.tenantSlug}&limit=3`)
-  ])
-  services = (await s.json()).docs || []
-  testimonials = (await t.json()).docs || []
+    fetch(
+      `${client.cmsUrl}/api/services?where[tenant.slug][equals]=${client.tenantSlug}&limit=6`,
+    ),
+    fetch(
+      `${client.cmsUrl}/api/testimonials?where[tenant.slug][equals]=${client.tenantSlug}&limit=3`,
+    ),
+  ]);
+  services = (await s.json()).docs || [];
+  testimonials = (await t.json()).docs || [];
 } catch {}
 
 const displayServices = services.length
   ? services
-  : client.services.map((s: string) => ({ title: s, description: `Professional ${s.toLowerCase()} services in ${client.city}.` }))
+  : client.services.map((s: string) => ({
+      title: s,
+      description: `Professional ${s.toLowerCase()} services in ${client.city}.`,
+    }));
 
-const primary = client.primaryColor || '#2d5a3d'
+const primary = client.primaryColor || "#2d5a3d";
 ---
 
 <Layout title="Home" description={client.tagline}>
+  <style>
+    .hero-gradient {
+      background: linear-gradient(
+        135deg,
+        rgba(var(--primary-rgb), 0.12) 0%,
+        #ffffff 70%
+      );
+    }
+    .service-card {
+      background: white;
+      border-radius: 32px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 420px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      position: relative;
+    }
+    .service-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+    .service-card-image {
+      position: relative;
+      height: 280px;
+      overflow: hidden;
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+    }
+    .service-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .service-card:hover .service-card-image img {
+      transform: scale(1.1);
+    }
+    .card-icon-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      width: 44px;
+      height: 44px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+    .service-card-content {
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex-grow: 1;
+      position: relative;
+    }
+    .service-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      width: 100%;
+      transition: opacity 0.3s ease;
+    }
+    .service-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1a3c26;
+      margin: 0;
+      line-height: 1.3;
+    }
+    .service-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #f4f9e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a3c26;
+      flex-shrink: 0;
+    }
+    .service-card-desc-overlay {
+      position: absolute;
+      inset: 0;
+      background: #c7e57c;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 20;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .service-card:hover .service-card-desc-overlay {
+      transform: translateY(0);
+    }
+    .service-card:hover .service-card-header {
+      opacity: 0;
+    }
+    .service-card-desc-overlay p {
+      font-size: 0.95rem;
+      color: #1a3c26;
+      font-weight: 500;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .overlay-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .service-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f1f12;
+      line-height: 1.3;
+      margin: 0;
+    }
+    .service-arrow {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f9fcf5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2d5a3d;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+      margin-left: 1rem;
+    }
+    .service-card:hover .service-arrow {
+      background: var(--primary);
+      color: white;
+    }
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: white;
+      padding: 0.5rem 1.5rem;
+      border-radius: 100px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #006080;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      margin-bottom: 1.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: default;
+    }
+    .pill-badge:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+    }
+    .pill-dot {
+      width: 10px;
+      height: 10px;
+      background: #89b449;
+      border-radius: 50%;
+    }
+    .btn-discover {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #c7e57c;
+      color: #2d5a3d;
+      padding: 0.8rem 2rem;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      margin-top: 2rem;
+    }
+    .btn-discover:hover {
+      transform: scale(1.05);
+      background: #b8d965;
+    }
+    .decorative-leaf {
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.4;
+    }
+    .feature-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      transition: transform 0.2s ease;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    .feature-card:hover {
+      transform: scale(1.02);
+    }
+    .testimonial-card {
+      background: #fafbfc;
+      border-radius: 24px;
+      padding: 2rem;
+      border: 1px solid #edf2f7;
+    }
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      padding: 0.5rem 1.25rem;
+      border-radius: 40px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      font-weight: 500;
+    }
+    .cta-section {
+      position: relative;
+      padding: 140px 0 100px;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/hero-bg.png') center/cover no-repeat;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+    .cta-container {
+      position: relative;
+      z-index: 5;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .cta-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .cta-desc {
+      font-size: 1.2rem;
+      opacity: 0.95;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    .cta-primary-btn {
+      background: #a8cf45;
+      color: white;
+      padding: 1.1rem 2.8rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(168, 207, 69, 0.3);
+    }
+    .cta-primary-btn:hover {
+      background: #96bb3d;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(168, 207, 69, 0.4);
+    }
+    .cta-phone-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.5rem;
+      transition: opacity 0.3s ease;
+    }
+    .cta-phone-link:hover {
+      opacity: 0.8;
+    }
+    .phone-icon-circle {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .cta-decoration-left {
+      position: absolute;
+      bottom: -20px;
+      left: -2%;
+      width: 420px;
+      z-index: 2;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+    }
+    .cta-decoration-right {
+      position: absolute;
+      bottom: -40px;
+      right: -2%;
+      width: 380px;
+      z-index: 2;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+    }
+    .cta-decoration-left img, .cta-decoration-right img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
 
-  <section style={`padding:5rem 1.5rem;background:linear-gradient(135deg,${primary}18 0%,#fff 65%)`}>
-    <div style="max-width:1200px;margin:0 auto">
-      <span style={`background:${primary}22;color:${primary};padding:0.3rem 0.9rem;border-radius:20px;font-size:0.85rem;font-weight:500`}>
-        Serving {client.city}, {client.state}
-      </span>
-      <h1 style="font-size:clamp(2rem,5vw,3.5rem);font-weight:800;margin:1rem 0;line-height:1.15;color:#111">
-        {client.tagline || `Professional ${client.industry} Services`}
-      </h1>
-      <p style="font-size:1.1rem;color:#4b5563;max-width:540px;margin-bottom:2rem;line-height:1.7">
-        Trusted by homeowners in {client.serviceArea?.slice(0,2).join(' & ')}. Licensed, insured, and ready to help.
-      </p>
-      <div style="display:flex;gap:1rem;flex-wrap:wrap">
-        <a href="/contact" style={`background:${primary};color:#fff;padding:0.85rem 2rem;border-radius:10px;font-weight:700;font-size:1.05rem`}>Get Free Quote</a>
-        <a href={`tel:${client.phone}`} style={`border:2px solid ${primary};color:${primary};padding:0.85rem 2rem;border-radius:10px;font-weight:700;font-size:1.05rem`}>{client.phone || 'Call Us'}</a>
-      </div>
+    .cta-grass-border {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: #0a1e0f;
+      z-index: 10;
+      clip-path: polygon(0% 100%, 100% 100%, 100% 30%, 98% 45%, 96% 25%, 94% 40%, 92% 20%, 90% 35%, 88% 15%, 86% 30%, 84% 10%, 82% 25%, 80% 5%, 78% 20%, 76% 0%, 74% 15%, 72% 0%, 70% 15%, 68% 5%, 66% 20%, 64% 10%, 62% 25%, 60% 15%, 58% 30%, 56% 15%, 54% 35%, 52% 20%, 50% 40%, 48% 25%, 46% 45%, 44% 30%, 42% 50%, 40% 35%, 38% 55%, 36% 40%, 34% 60%, 32% 45%, 30% 65%, 28% 50%, 26% 70%, 24% 55%, 22% 75%, 20% 60%, 18% 80%, 16% 65%, 14% 85%, 12% 70%, 10% 90%, 8% 75%, 6% 95%, 4% 80%, 2% 100%, 0% 85%);
+    }
+
+    @media (max-width: 1200px) {
+      .cta-decoration-left { width: 300px; }
+      .cta-decoration-right { width: 250px; }
+    }
+    @media (max-width: 992px) {
+      .cta-decoration-left, .cta-decoration-right {
+        display: none;
+      }
+      .cta-section { padding: 80px 0; }
+      .cta-actions {
+        flex-direction: column;
+        gap: 2rem;
+      }
+    }
+    .icon-bg {
+      background: rgba(var(--primary-rgb), 0.12);
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px) scale(0.95);
+      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      filter: blur(10px);
+      will-change: transform, opacity, filter;
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+    .reveal-delay-1 {
+      transition-delay: 0.15s;
+    }
+    .reveal-delay-2 {
+      transition-delay: 0.3s;
+    }
+    .reveal-delay-3 {
+      transition-delay: 0.45s;
+    }
+    .reveal-delay-4 {
+      transition-delay: 0.6s;
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+    .marquee-container {
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      display: flex;
+    }
+    .marquee-content {
+      display: flex;
+      animation: marquee 30s linear infinite;
+      min-width: 200%;
+      will-change: transform;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      perspective: 1000px;
+    }
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      padding: 0 4rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .marquee-item {
+        padding: 0 1.5rem !important;
+        font-size: 0.85rem !important;
+      }
+      .marquee-overlap > div {
+        padding: 1rem 0 !important;
+        margin: 0 1rem !important;
+        border-radius: 40px !important;
+      }
+      .marquee-content {
+        animation-duration: 20s !important;
+      }
+    }
+    .marquee-dot {
+      width: 8px;
+      height: 8px;
+      background: currentColor;
+      border-radius: 50%;
+      margin: 0 1rem;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 768px) {
+      .hero-section {
+        padding-top: 160px !important;
+        padding-bottom: 80px !important;
+        min-height: auto !important;
+        text-align: center;
+      }
+      .hero-section .container {
+        padding: 0 1.5rem !important;
+      }
+      .hero-section h1 {
+        font-size: 2.2rem !important;
+        margin-bottom: 1.25rem !important;
+      }
+      .hero-section p {
+        font-size: 1rem !important;
+        margin-bottom: 2rem !important;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero-section .btn-discover {
+        padding: 0.8rem 1.5rem !important;
+        font-size: 0.9rem !important;
+        width: 100%;
+        justify-content: center;
+      }
+      .hero-section .btn-discover div {
+        width: 32px !important;
+        height: 32px !important;
+      }
+      .marquee-overlap {
+        margin-top: -30px !important;
+      }
+      .trust-badge {
+        padding: 0.35rem 1rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+
+  <!-- Hero Section Redesign -->
+  <section
+    class="hero-section"
+    style="position: relative; min-height: 100vh; display: flex; align-items: center; background: url('/images/hero-bg.png') center/cover no-repeat; padding: 120px 0 60px;"
+  >
+    <!-- Dark Overlay for Readability -->
+    <div
+      style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(10, 30, 15, 0.8) 0%, rgba(10, 30, 15, 0.4) 50%, transparent 100%); z-index: 1;"
+    >
     </div>
-  </section>
 
-  <section style="padding:1.25rem 1.5rem;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;background:#f9fafb">
-    <div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:2rem;font-size:0.875rem;color:#374151;font-weight:500">
-      {['✓ Licensed & Insured', '✓ Free Estimates', '✓ Same Day Service', '✓ 5-Star Rated', '✓ Satisfaction Guaranteed'].map(b => <span>{b}</span>)}
-    </div>
-  </section>
+    <div
+      class="container"
+      style="position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; width: 100%; padding: 0 2rem;"
+    >
+      <div style="max-width: 750px;">
+        <span
+          class="badge reveal"
+          style="margin-bottom: 1.5rem; display: inline-block; background: rgba(255,255,255,0.1); color: #fff; backdrop-filter: blur(5px);"
+        >
+          🌿 Serving {client.city}, {client.state}
+        </span>
+        <h1
+          style="font-size: clamp(2.8rem, 8vw, 5rem); font-weight: 800; line-height: 1.1; color: #fff; margin-bottom: 1.5rem; letter-spacing: -0.01em;"
+          class="reveal reveal-delay-1"
+        >
+          {client.tagline || `Professional ${client.industry} Services`}
+        </h1>
 
-  <section style="padding:4rem 1.5rem">
-    <div style="max-width:1200px;margin:0 auto">
-      <div style="text-align:center;margin-bottom:2.5rem">
-        <h2 style="font-size:2rem;font-weight:700;margin-bottom:0.75rem">Our Services</h2>
-        <p style="color:#6b7280;max-width:500px;margin:0 auto">Comprehensive {client.industry} services for homeowners and businesses in {client.city}.</p>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem">
-        {displayServices.map((service: any) => (
-          <div style="padding:1.5rem;border-radius:12px;border:1px solid #e5e7eb">
-            <div style={`width:44px;height:44px;border-radius:10px;background:${primary}22;display:flex;align-items:center;justify-content:center;margin-bottom:1rem`}>
-              <svg width="22" height="22" fill="none" stroke={primary} viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <h3 style="font-weight:700;font-size:1rem;margin-bottom:0.5rem">{service.title}</h3>
-            <p style="color:#6b7280;font-size:0.875rem;line-height:1.6">{service.description}</p>
+        <p
+          class="reveal reveal-delay-2"
+          style="font-size: 1.25rem; color: #fff; max-width: 540px; margin-bottom: 2.5rem; line-height: 1.6; opacity: 0.9;"
+        >
+          Trusted by homeowners in {
+            client.serviceArea?.slice(0, 2).join(" & ")
+          }. Licensed, insured, and ready to transform your outdoor space.
+        </p>
+
+        <a
+          href="/contact"
+          class="btn-discover reveal reveal-delay-3"
+          style="background: #c7e57c; color: #1a3c26; padding: 1.2rem 2.5rem; font-size: 1.1rem; border-radius: 100px; display: inline-flex; align-items: center; gap: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em;"
+        >
+          Discover More
+          <div
+            style="width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #1a3c26;"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"></path></svg
+            >
           </div>
-        ))}
-      </div>
-      <div style="text-align:center;margin-top:2rem">
-        <a href="/services" style={`border:2px solid ${primary};color:${primary};padding:0.75rem 2rem;border-radius:10px;font-weight:600`}>View All Services →</a>
+        </a>
       </div>
     </div>
   </section>
 
-  <section style={`padding:4rem 1.5rem;background:${primary}12`}>
-    <div style="max-width:1200px;margin:0 auto">
-      <h2 style="font-size:2rem;font-weight:700;text-align:center;margin-bottom:2.5rem">Why Choose {client.name}?</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem">
-        {[
-          { icon: '🏆', title: 'Years of Experience', desc: 'Trusted by hundreds of local homeowners.' },
-          { icon: '⚡', title: 'Fast Response', desc: 'Same-day service. We show up when we say.' },
-          { icon: '💯', title: 'Quality Guaranteed', desc: 'Satisfaction guarantee on every job.' },
-          { icon: '💰', title: 'Fair Pricing', desc: 'Transparent quotes. No hidden fees.' },
-        ].map(item => (
-          <div style="text-align:center;padding:1.75rem 1.25rem;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
-            <div style="font-size:2.5rem;margin-bottom:0.75rem">{item.icon}</div>
-            <h3 style="font-weight:700;margin-bottom:0.5rem">{item.title}</h3>
-            <p style="color:#6b7280;font-size:0.875rem;line-height:1.6">{item.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {testimonials.length > 0 && (
-    <section style="padding:4rem 1.5rem">
-      <div style="max-width:1200px;margin:0 auto">
-        <h2 style="font-size:2rem;font-weight:700;text-align:center;margin-bottom:2.5rem">What Our Clients Say</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem">
-          {testimonials.map((t: any) => (
-            <div style="padding:1.5rem;background:#f9fafb;border-radius:12px;border:1px solid #e5e7eb">
-              <div style="color:#facc15;margin-bottom:0.75rem">★★★★★</div>
-              <p style="color:#374151;font-style:italic;margin-bottom:1rem;line-height:1.7">"{t.text || t.content}"</p>
-              <p style="font-weight:700">{t.name || t.author}</p>
-              {t.location && <p style="font-size:0.8rem;color:#6b7280">{t.location}</p>}
-            </div>
-          ))}
+  <!-- Auto-Slide Marquee Section -->
+  <section
+    class="marquee-overlap"
+    style="overflow: hidden; margin-top: -60px; position: relative; z-index: 10;"
+  >
+    <!-- Lime Green Service Bar -->
+    <div
+      style="background: #c7e57c; padding: 2rem 0; margin: 0 1.5rem; border-radius: 60px; position: relative; z-index: 5; box-shadow: 0 20px 50px rgba(0,0,0,0.15);"
+    >
+      <div class="marquee-container">
+        <div class="marquee-content">
+          {
+            Array(4)
+              .fill(0)
+              .map(() => (
+                <>
+                  <div class="marquee-item" style="color: #000;">
+                    CUSTOM GARDEN DESIGN
+                  </div>
+                  <div class="marquee-dot" style="color: #000;" />
+                  <div class="marquee-item" style="color: #000;">
+                    RELIABLE LAWN CARE
+                  </div>
+                  <div class="marquee-dot" style="color: #000;" />
+                  <div class="marquee-item" style="color: #000;">
+                    PROFESSIONAL LANDSCAPING
+                  </div>
+                  <div class="marquee-dot" style="color: #000;" />
+                  <div class="marquee-item" style="color: #000;">
+                    PREMIUM TURFING
+                  </div>
+                  <div class="marquee-dot" style="color: #000;" />
+                </>
+              ))
+          }
         </div>
       </div>
-    </section>
-  )}
+    </div>
 
-  <section style={`padding:4rem 1.5rem;background:${primary};color:#fff;text-align:center`}>
-    <div style="max-width:700px;margin:0 auto">
-      <h2 style="font-size:2rem;font-weight:700;margin-bottom:1rem">Ready to Get Started?</h2>
-      <p style="opacity:0.9;margin-bottom:2rem;font-size:1.05rem">Contact us today for a free, no-obligation estimate.</p>
-      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-        <a href="/contact" style="background:#fff;color:#111;padding:0.85rem 2.5rem;border-radius:10px;font-weight:700">Get Free Quote</a>
-        <a href={`tel:${client.phone}`} style="border:2px solid rgba(255,255,255,0.7);color:#fff;padding:0.85rem 2.5rem;border-radius:10px;font-weight:700">{client.phone || 'Call Us'}</a>
+    <!-- White Trust Bar -->
+    <div style="background: #fff; padding: 2.5rem 0; margin-top: 1rem;">
+      <div class="marquee-container">
+        <div class="marquee-content" style="animation-duration: 80s;">
+          {
+            Array(4)
+              .fill(0)
+              .map(() => (
+                <>
+                  {[
+                    "Licensed & Insured",
+                    "Free Estimates",
+                    "Same Day Service",
+                    "5-Star Rated",
+                    "Satisfaction Guaranteed",
+                  ].map((b) => (
+                    <div class="marquee-item">
+                      <div
+                        class="trust-badge"
+                        style="box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; margin-right: 0; padding: 0.75rem 1.75rem;"
+                      >
+                        <span style="color: #89b449; font-weight: 700;">✓</span>{" "}
+                        {b}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ))
+          }
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- Services Section -->
+  <section
+    style="padding: 6rem 1.5rem; background: #f9fcf5; position: relative; overflow: hidden;"
+  >
+    <!-- Background Illustrations -->
+    <div
+      class="decorative-leaf"
+      style="top: 2rem; right: -2rem; transform: rotate(15deg);"
+    >
+      <svg
+        width="120"
+        height="120"
+        viewBox="0 0 120 120"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10 110C10 110 30 70 80 60C110 54 115 10 115 10C115 10 70 15 64 45C54 95 10 110 10 110Z"
+          stroke="#89b449"
+          stroke-width="2"
+          stroke-linecap="round"></path>
+        <path
+          d="M40 90C40 90 55 75 75 75"
+          stroke="#89b449"
+          stroke-width="1.5"
+          stroke-linecap="round"></path>
+      </svg>
+    </div>
+    <div
+      class="decorative-leaf"
+      style="bottom: 2rem; left: -1rem; transform: rotate(-20deg);"
+    >
+      <svg
+        width="100"
+        height="150"
+        viewBox="0 0 100 150"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10 140C10 140 30 100 30 40C30 10 70 10 70 10"
+          stroke="#89b449"
+          stroke-width="2"
+          stroke-linecap="round"></path>
+        <path
+          d="M30 100C30 100 60 90 80 60"
+          stroke="#89b449"
+          stroke-width="2"
+          stroke-linecap="round"></path>
+        <path
+          d="M30 70C30 70 50 60 60 40"
+          stroke="#89b449"
+          stroke-width="2"
+          stroke-linecap="round"></path>
+      </svg>
+    </div>
+
+    <div
+      class="container"
+      style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;"
+    >
+      <div class="reveal" style="text-align: center; margin-bottom: 4rem;">
+        <div class="pill-badge">
+          <div class="pill-dot"></div>
+          Our Services
+        </div>
+        <h2
+          style="font-size: 1.8rem; font-weight: 300; margin-bottom: 1.5rem; letter-spacing: -0.02em; color: #0a1e0f; max-width: 700px; margin-left: auto; margin-right: auto;"
+        >
+          Comprehensive {client.industry} services for homeowners and businesses in
+          {client.city}.
+        </h2>
+      </div>
+
+      <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;"
+      >
+        {
+          (() => {
+            const staticAssets = [
+              {
+                image: "/images/services/landscape-design.png",
+                icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+              },
+              {
+                image: "/images/services/lawn-care.png",
+                icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="2"><path d="M10 21l2-2m2 2l-2-2m0 0V11m0-4V3M4 21h16"/></svg>`,
+              },
+              {
+                image: "/images/services/turfing.png",
+                icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`,
+              },
+              {
+                image: "/images/services/garden-installation.png",
+                icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="2"><path d="M12 10a4 4 0 0 0-4 4c0 2 3 6 4 6s4-4 4-6a4 4 0 0 0-4-4z"/><circle cx="12" cy="14" r="1.5"/></svg>`,
+              },
+            ];
+
+            return displayServices.map((service: any, index: number) => {
+              const asset = staticAssets[index % staticAssets.length];
+              return (
+                <a
+                  href={`/services/${(service.slug || service.title).toLowerCase().trim().replace(/\s+/g, '-')}`}
+                  class={`service-card reveal reveal-delay-${(index % 4) + 1}`}
+                >
+                  <div class="service-card-image">
+                    <div class="card-icon-badge" set:html={asset.icon} />
+                    <img src={asset.image} alt={service.title} loading="lazy" />
+                  </div>
+                  <div class="service-card-content">
+                    <div class="service-card-header">
+                      <h3 class="service-card-title">{service.title}</h3>
+                      <div class="service-arrow">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                          <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Hover Overlay -->
+                  <div class="service-card-desc-overlay">
+                    <div class="overlay-title">{service.title}</div>
+                    <p>{service.description}</p>
+                  </div>
+                </a>
+              );
+            });
+          })()
+        }
+      </div>
+
+      <div
+        class="reveal reveal-delay-4"
+        style="text-align: center; margin-top: 2rem;"
+      >
+        <a href="/services" class="btn-discover">
+          Discover More
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Redesign -->
+  <section
+    style="padding: 6rem 1.5rem; background: white; position: relative; overflow: hidden;"
+  >
+    <!-- Background leaf illustrations -->
+    <div class="decorative-leaf" style="top: 10%; right: 5%; opacity: 0.1;">
+      <svg width="150" height="150" viewBox="0 0 150 150" fill="none">
+        <path
+          d="M10 140C10 140 50 100 100 100C150 100 140 10 140 10"
+          stroke="#89b449"
+          stroke-width="2"></path>
+      </svg>
+    </div>
+
+    <div class="container" style="max-width: 1200px; margin: 0 auto;">
+      <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 4rem; align-items: center;"
+      >
+        <!-- Left Column: Shaped Image -->
+        <div
+          class="reveal"
+          style="position: relative; display: flex; justify-content: center;"
+        >
+          <div style="position: relative; width: 100%; max-width: 450px;">
+            <!-- Sprout decoration on top -->
+            <div
+              style="position: absolute; top: -40px; left: 50%; transform: translateX(-50%); z-index: 10;"
+            >
+              <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                <path
+                  d="M30 10C30 10 35 30 50 35C35 40 30 60 30 60C30 60 25 40 10 35C25 30 30 10 30 10Z"
+                  fill="#c7e57c"></path>
+                <path
+                  d="M30 0C30 0 32 10 40 15C32 20 30 30 30 30C30 30 28 20 20 15C28 10 30 0 30 0Z"
+                  fill="#89b449"></path>
+              </svg>
+            </div>
+            <!-- Main Image with complex border radius/shape -->
+            <div
+              style="width: 100%; height: 500px; overflow: hidden; border-radius: 200px 200px 200px 200px; border-bottom-left-radius: 400px; border-bottom-right-radius: 400px; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.15);"
+            >
+              <img
+                src="/images/why-choose-us.png"
+                alt="Our Team"
+                style="width: 100%; height: 100%; object-fit: cover;"
+              />
+            </div>
+            <!-- Extra decorative leaf behind -->
+            <div
+              style="position: absolute; bottom: -20px; right: -20px; z-index: -1; opacity: 0.2;"
+            >
+              <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                <path
+                  d="M10 110C10 110 30 70 80 60C110 54 115 10 115 10"
+                  stroke="#89b449"
+                  stroke-width="2"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Content and Grid -->
+        <div>
+          <div class="reveal" style="margin-bottom: 3rem;">
+            <div class="pill-badge">
+              <div class="pill-dot"></div>
+              Why Choose Us
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+              <h2
+                style="font-size: 2.8rem; font-weight: 800; line-height: 1.2; color: #0a1e0f; letter-spacing: -0.02em;"
+              >
+                Why Homeowners Trust Our Landscaping Expertise
+              </h2>
+              <p
+                style="color: #4a5a4a; line-height: 1.7; font-size: 1.05rem; opacity: 0.8; max-width: 500px;"
+              >
+                We pride ourselves on delivering exceptional results with a
+                personal touch. Our dedicated team of experts is committed to
+                transforming your outdoor vision into a stunning reality.
+              </p>
+            </div>
+          </div>
+
+          <!-- Feature Grid -->
+          <div
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;"
+          >
+            {
+              [
+                {
+                  title: "Experienced Team",
+                  icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+                  desc: "Years of hands-on experience delivering exceptional results.",
+                },
+                {
+                  title: "High-Quality Materials",
+                  icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`,
+                  desc: "We use only the finest plants and materials for lasting beauty.",
+                },
+                {
+                  title: "On-Time Service",
+                  icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+                  desc: "We respect your time and always show up as scheduled.",
+                },
+                {
+                  title: "Reliable Support",
+                  icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-10.6 8.38 8.38 0 0 1 3.8.9"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+                  desc: "Our team is always here to answer your questions.",
+                },
+              ].map((item, index) => (
+                <div
+                  class={`reveal reveal-delay-${index + 1}`}
+                  style="background: #f4f7ed; padding: 1.5rem; border-radius: 20px; transition: transform 0.3s ease; border: 1px solid rgba(137, 180, 73, 0.1);"
+                >
+                  <div style="width: 48px; height: 48px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #89b449; margin-bottom: 1.25rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    <div set:html={item.icon} />
+                  </div>
+                  <h3 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.75rem; color: #0a1e0f;">
+                    {item.title}
+                  </h3>
+                  <p style="color: #4a5a4a; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.25rem; opacity: 0.9;">
+                    {item.desc}
+                  </p>
+                  <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: #2d5a3d;">
+                      <span style="color: #89b449;">✓</span> Planting Expertise
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: #2d5a3d;">
+                      <span style="color: #89b449;">✓</span> Soil Preparation
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  {
+    testimonials.length > 0 && (
+      <section style="padding: 5rem 1.5rem;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto;">
+          <div class="reveal" style="text-align: center; margin-bottom: 3rem;">
+            <span class="badge">Client Love</span>
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0 0.5rem;">
+              What Our Clients Say
+            </h2>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            {testimonials.map((t: any) => (
+              <div class="testimonial-card">
+                <div style="color: #fbbf24; margin-bottom: 1.25rem; font-size: 1.4rem; letter-spacing: 2px;">
+                  ★★★★★
+                </div>
+                <p style="color: #1e2a1e; font-style: italic; margin-bottom: 1.5rem; line-height: 1.7; font-size: 1.05rem;">
+                  "{t.text || t.content}"
+                </p>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <div
+                    style={`width: 40px; height: 40px; border-radius: 40px; background: ${primary}; opacity: 0.2;`}
+                  />
+                  <div>
+                    <p style="font-weight: 700; color: #0f1f12;">
+                      {t.name || t.author}
+                    </p>
+                    {t.location && (
+                      <p style="font-size: 0.85rem; color: #6b7c6b;">
+                        {t.location}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="container cta-container">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to transform your outdoor space?</h2>
+        <p class="cta-desc">
+          Get your free, no-obligation estimate today. Our team is ready to bring your landscaping vision to life.
+        </p>
+        <div class="cta-actions">
+          <a href="/contact" class="cta-primary-btn">Get Free Quote</a>
+          <a href={`tel:${client.phone}`} class="cta-phone-link">
+            <div class="phone-icon-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <span class="phone-text">{client.phone}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Decorative Elements -->
+    <div class="cta-decoration-left">
+      <img src="/images/services/landscape-design.png" alt="" />
+    </div>
+    <div class="cta-decoration-right">
+       <img src="/images/services/garden-installation.png" alt="" />
+    </div>
+    <div class="cta-grass-border"></div>
+  </section>
+  <script>
+    // Reveal Animation Logic
+    const observerOptions = {
+      threshold: 0.15,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+        } else {
+          entry.target.classList.remove("active");
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+  </script>
 </Layout>

@@ -1,21 +1,23 @@
 ---
-import '../styles/global.css'
-import { client } from '../client.config.js'
-const { title, description } = Astro.props
-const fullTitle = `${title} | ${client.name}`
-const metaDesc = description || client.tagline
-const currentPath = Astro.url.pathname
-const primary = client.primaryColor || '#2d5a3d'
+import "../styles/global.css";
+import { client } from "../client.config.js";
+const { title, description } = Astro.props;
+const fullTitle = `${title} | ${client.name}`;
+const metaDesc = description || client.tagline;
+const currentPath = Astro.url.pathname;
+const primary = client.primaryColor || "#2d5a3d";
 ---
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{fullTitle}</title>
-  <meta name="description" content={metaDesc} />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <style set:html={`
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={metaDesc} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style
+      set:html={`
     :root {
       --primary: ${primary};
       --primary-light: ${primary}22;
@@ -52,80 +54,557 @@ const primary = client.primaryColor || '#2d5a3d'
       .mobile-only { display: none !important; }
       #mobile-nav { display: none !important; }
     }
-  `}></style>
-</head>
-<body style="min-height:100vh; display:flex; flex-direction:column">
+  `}
+    ></style>
+  </head>
+  <style is:global>
+    header.floating-header {
+      position: fixed;
+      top: 1.5rem;
+      left: 2rem;
+      right: 2rem;
+      z-index: 100;
+      background: rgba(10, 30, 15, 0.7);
+      backdrop-filter: blur(15px);
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
 
-  <header style="position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,0.05)">
-    <div class="container" style="display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 1.5rem">
-      <a href="/" style={`color:${primary};font-weight:800;font-size:1.15rem`}>{client.name}</a>
-      <nav class="desktop-only" style="display:flex;gap:1.75rem;align-items:center">
-        <a href="/" class={`nav-link${currentPath==='/'?' active':''}`}>Home</a>
-        <a href="/services" class={`nav-link${currentPath==='/services'?' active':''}`}>Services</a>
-        <a href="/about" class={`nav-link${currentPath==='/about'?' active':''}`}>About</a>
-        <a href="/gallery" class={`nav-link${currentPath==='/gallery'?' active':''}`}>Gallery</a>
-        <a href="/testimonials" class={`nav-link${currentPath==='/testimonials'?' active':''}`}>Reviews</a>
-        <a href="/blog" class={`nav-link${currentPath==='/blog'?' active':''}`}>Blog</a>
-        <a href="/contact" class={`nav-link${currentPath==='/contact'?' active':''}`}>Contact</a>
-        <a href="/contact" class="btn-primary">Get Free Quote</a>
-      </nav>
-      <button id="menu-btn" class="mobile-only" style="background:none;border:none;cursor:pointer;padding:0.5rem">
-        <svg width="24" height="24" fill="none" stroke="#374151" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-      </button>
-    </div>
-    <div id="mobile-nav" style="display:none;flex-direction:column;padding:1rem 1.5rem;gap:0.5rem;border-top:1px solid #f3f4f6">
-      <a href="/" style="padding:0.5rem 0;color:#374151;font-weight:500;border-bottom:1px solid #f9fafb">Home</a>
-      <a href="/services" style="padding:0.5rem 0;color:#374151;font-weight:500;border-bottom:1px solid #f9fafb">Services</a>
-      <a href="/about" style="padding:0.5rem 0;color:#374151;font-weight:500;border-bottom:1px solid #f9fafb">About</a>
-      <a href="/gallery" style="padding:0.5rem 0;color:#374151;font-weight:500;border-bottom:1px solid #f9fafb">Gallery</a>
-      <a href="/testimonials" style="padding:0.5rem 0;color:#374151;font-weight:500;border-bottom:1px solid #f9fafb">Reviews</a>
-      <a href="/blog" style="padding:0.5rem 0;color:#374151;font-weight:500;border-bottom:1px solid #f9fafb">Blog</a>
-      <a href="/contact" style="padding:0.5rem 0;color:#374151;font-weight:500;border-bottom:1px solid #f9fafb">Contact</a>
-      <a href="/contact" class="btn-primary" style="margin-top:0.5rem;text-align:center">Get Free Quote</a>
-    </div>
-  </header>
+    @media (max-width: 768px) {
+      header.floating-header {
+        left: 1rem;
+        right: 1rem;
+        top: 1rem;
+        border-radius: 20px;
+      }
+      .container {
+        padding: 0 1.25rem !important;
+      }
+    }
 
-  <main style="flex:1"><slot /></main>
+    .btn-discover {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
 
-  <footer style="background:#111827;color:#d1d5db;margin-top:4rem">
-    <div class="container" style="padding:3rem 1.5rem">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2rem;margin-bottom:2rem">
-        <div>
-          <h3 style="color:#fff;font-weight:700;margin-bottom:0.75rem">{client.name}</h3>
-          <p style="font-size:0.875rem;color:#9ca3af;margin-bottom:0.5rem">{client.tagline}</p>
-          {client.address && <p style="font-size:0.875rem">{client.address}, {client.city}, {client.state}</p>}
+    .btn-discover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(199, 229, 124, 0.3);
+    }
+  </style>
+  <body style="min-height:100vh; display:flex; flex-direction:column">
+    <header class="floating-header">
+      <div
+        class="container"
+        style="display: flex; align-items: center; justify-content: space-between; height: 80px; padding: 0 3rem;"
+      >
+        <a
+          href="/"
+          style="display: flex; align-items: center; gap: 0.75rem; color: #fff; font-weight: 800; font-size: 1.4rem;"
+        >
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <path d="M20 5L35 20L20 35L5 20L20 5Z" fill="#c7e57c"></path>
+            <path d="M20 10L30 20L20 30L10 20L20 10Z" fill="#2d5a3d"></path>
+          </svg>
+          {client.name}
+        </a>
+
+        <nav
+          class="desktop-only"
+          style="display: flex; gap: 2rem; align-items: center;"
+        >
+          <a
+            href="/"
+            class={`nav-link${currentPath === "/" ? " active" : ""}`}
+            style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"
+            >Home</a
+          >
+          <a
+            href="/services"
+            class={`nav-link${currentPath === "/services" ? " active" : ""}`}
+            style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"
+            >Services</a
+          >
+          <a
+            href="/about"
+            class={`nav-link${currentPath === "/about" ? " active" : ""}`}
+            style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"
+            >About</a
+          >
+          <a
+            href="/gallery"
+            class={`nav-link${currentPath === "/gallery" ? " active" : ""}`}
+            style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"
+            >Gallery</a
+          >
+          <a
+            href="/testimonials"
+            class={`nav-link${currentPath === "/testimonials" ? " active" : ""}`}
+            style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"
+            >Reviews</a
+          >
+          <a
+            href="/blog"
+            class={`nav-link${currentPath === "/blog" ? " active" : ""}`}
+            style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"
+            >Blog</a
+          >
+          <a
+            href="/contact"
+            class={`nav-link${currentPath === "/contact" ? " active" : ""}`}
+            style="color: #fff; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"
+            >Contact</a
+          >
+        </nav>
+
+        <div
+          class="desktop-only"
+          style="display: flex; align-items: center; gap: 2rem;"
+        >
+          <div
+            style="display: flex; align-items: center; gap: 0.75rem; color: #fff;"
+          >
+            <div
+              style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                ><path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+                ></path></svg
+              >
+            </div>
+            <span style="font-weight: 700; font-size: 0.9rem;"
+              >{client.phone}</span
+            >
+          </div>
+          <a
+            href="/contact"
+            class="btn-discover"
+            style="background: #fff; color: #2d5a3d; padding: 0.5rem 1rem 0.5rem 1.5rem; font-size: 0.85rem;"
+          >
+            Get In Touch
+            <div
+              style="width: 32px; height: 32px; border-radius: 50%; background: #c7e57c; display: flex; align-items: center; justify-content: center; color: #1a3c26;"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"></path></svg
+              >
+            </div>
+          </a>
         </div>
-        <div>
-          <h4 style="color:#fff;font-weight:600;margin-bottom:0.75rem">Services</h4>
-          {client.services.slice(0,5).map((s:string) => (
-            <a href="/services" style="display:block;color:#9ca3af;font-size:0.875rem;margin-bottom:0.35rem">{s}</a>
-          ))}
+
+        <button
+          id="menu-btn"
+          class="mobile-only"
+          style="background:none; border:none; cursor:pointer; padding:0.5rem; color:#fff"
+        >
+          <svg
+            width="28"
+            height="28"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path></svg
+          >
+        </button>
+      </div>
+
+      <div
+        id="mobile-nav"
+        style="display:none; flex-direction:column; padding:1.5rem; gap:0.5rem; background: #1a3c26; border-top: 1px solid rgba(255,255,255,0.1); position: absolute; top: 100%; left: 0; right: 0; border-radius: 0 0 20px 20px;"
+      >
+        {
+          [
+            { label: "Home", path: "/" },
+            { label: "Services", path: "/services" },
+            { label: "About", path: "/about" },
+            { label: "Gallery", path: "/gallery" },
+            { label: "Reviews", path: "/testimonials" },
+            { label: "Blog", path: "/blog" },
+            { label: "Contact", path: "/contact" },
+          ].map((link) => (
+            <a
+              href={link.path}
+              style="padding:0.8rem 0; color:#fff; font-weight:600; border-bottom:1px solid rgba(255,255,255,0.05); font-size: 0.95rem; text-decoration: none;"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+        <a
+          href="/contact"
+          class="btn-discover"
+          style="margin-top:1rem; background: #c7e57c; color: #1a3c26; justify-content: center; width: 100%;"
+        >
+          Get Free Quote
+        </a>
+      </div>
+    </header>
+
+    <main style="flex:1"><slot /></main>
+
+    <footer class="ft-section">
+      <div class="ft-container">
+        <!-- Top Section: Columns -->
+        <div class="ft-grid">
+          <!-- Col 1: About -->
+          <div class="ft-col">
+            <h3 class="ft-title">About Company</h3>
+            <p class="ft-desc">
+              {client.tagline} We are dedicated to transforming your outdoor spaces into premium living environments with professional care.
+            </p>
+            <a href="/contact" class="ft-appointment-btn">
+              <span>Get Appointment</span>
+              <div class="ft-arrow-circle">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+              </div>
+            </a>
+          </div>
+
+          <!-- Col 2: Company -->
+          <div class="ft-col">
+            <h3 class="ft-title">Company</h3>
+            <ul class="ft-links">
+              <li><a href="/">Home</a></li>
+              <li><a href="/services">Our Services</a></li>
+              <li><a href="/about">About Us</a></li>
+              <li><a href="/blog">Our Blogs</a></li>
+              <li><a href="/contact">Contact Us</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Services -->
+          <div class="ft-col">
+            <h3 class="ft-title">Services</h3>
+            <ul class="ft-links">
+              {client.services.slice(0, 6).map((s: string) => (
+                <li><a href="/services">{s}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Col 4: Address -->
+          <div class="ft-col">
+            <h3 class="ft-title">Address</h3>
+            <p class="ft-info">{client.address}</p>
+            <p class="ft-info">{client.city}, {client.state}</p>
+            
+            <h4 class="ft-subtitle">Phone</h4>
+            <p class="ft-info">{client.phone}</p>
+            <p class="ft-info">{client.email}</p>
+          </div>
         </div>
-        <div>
-          <h4 style="color:#fff;font-weight:600;margin-bottom:0.75rem">Contact</h4>
-          {client.phone && <a href={`tel:${client.phone}`} style="display:block;color:#9ca3af;font-size:0.875rem;margin-bottom:0.35rem">{client.phone}</a>}
-          {client.email && <a href={`mailto:${client.email}`} style="display:block;color:#9ca3af;font-size:0.875rem;margin-bottom:0.75rem">{client.email}</a>}
-          <a href="/contact" class="btn-primary" style="font-size:0.875rem">Get Free Quote</a>
+
+        <!-- Middle Section: Trust Bar -->
+        <div class="ft-trust-bar">
+          <div class="ft-brand">
+            <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
+              <path d="M20 5L35 20L20 35L5 20L20 5Z" fill="#c7e57c"></path>
+              <path d="M20 10L30 20L20 30L10 20L20 10Z" fill="#fff"></path>
+            </svg>
+            <span class="ft-logo-text">{client.name}</span>
+          </div>
+
+          <div class="ft-socials">
+            <a href="#" class="ft-social-link"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+            <a href="#" class="ft-social-link"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg></a>
+            <a href="#" class="ft-social-link"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 4-8 4z"/></svg></a>
+            <a href="#" class="ft-social-link"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg></a>
+          </div>
+
+          <div class="ft-newsletter">
+            <span class="ft-news-label">Subscribe to Our Newsletter</span>
+            <form class="ft-news-form">
+              <input type="email" placeholder="Email Address" required />
+              <button type="submit">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </form>
+          </div>
         </div>
-        <div>
-          <h4 style="color:#fff;font-weight:600;margin-bottom:0.75rem">Service Areas</h4>
-          {client.serviceArea?.slice(0,5).map((a:string) => (
-            <p style="color:#9ca3af;font-size:0.875rem;margin-bottom:0.25rem">{a}</p>
-          ))}
+
+        <!-- Bottom Bar: Copyright -->
+        <div class="ft-bottom">
+          <p class="ft-copy">© Copyright {new Date().getFullYear()} by {client.name}.com</p>
+          <div class="ft-legal">
+            <a href="#">Terms & Condition</a>
+            <a href="#">Privacy Policy</a>
+            <a href="/contact">Contact us</a>
+          </div>
         </div>
       </div>
-      <div style="border-top:1px solid #1f2937;padding-top:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;font-size:0.75rem;color:#6b7280">
-        <p>© {new Date().getFullYear()} {client.name}. All rights reserved.</p>
-        <p>Licensed & Insured | {client.city}, {client.state}</p>
-      </div>
-    </div>
-  </footer>
 
-  <script>
-    document.getElementById('menu-btn')?.addEventListener('click', () => {
-      const nav = document.getElementById('mobile-nav');
-      if (nav) nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
-    });
-  </script>
-</body>
+      <!-- Decorative Leaf Patterns -->
+      <div class="ft-leaf-left"></div>
+      <div class="ft-leaf-right"></div>
+    </footer>
+
+    <style>
+      .ft-section {
+        background-color: #0a1e0f;
+        color: #ffffff;
+        padding: 100px 0 30px;
+        position: relative;
+        overflow: hidden;
+      }
+      .ft-container {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 5;
+      }
+      .ft-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+        gap: 4rem;
+        margin-bottom: 80px;
+      }
+      .ft-col {
+        display: flex;
+        flex-direction: column;
+      }
+      .ft-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .ft-desc {
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.8;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+      }
+      .ft-appointment-btn {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: #c7e57c;
+        color: #0a1e0f;
+        padding: 0.6rem 0.6rem 0.6rem 1.5rem;
+        border-radius: 100px;
+        width: fit-content;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+      .ft-appointment-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(199, 229, 124, 0.2);
+      }
+      .ft-arrow-circle {
+        width: 40px;
+        height: 40px;
+        background: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0a1e0f;
+      }
+      .ft-links {
+        list-style: none;
+        padding: 0;
+      }
+      .ft-links li {
+        margin-bottom: 1rem;
+      }
+      .ft-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+      .ft-links a:hover {
+        color: #c7e57c;
+        padding-left: 8px;
+      }
+      .ft-info {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.6;
+      }
+      .ft-subtitle {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 1.5rem 0 1rem;
+      }
+
+      .ft-trust-bar {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 100px;
+        padding: 1.5rem 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 50px;
+      }
+      .ft-brand {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .ft-logo-text {
+        font-size: 1.5rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+      .ft-socials {
+        display: flex;
+        gap: 1rem;
+      }
+      .ft-social-link {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        transition: all 0.3s ease;
+      }
+      .ft-social-link:hover {
+        background: #c7e57c;
+        color: #0a1e0f;
+        transform: translateY(-3px);
+      }
+      .ft-newsletter {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+      .ft-news-label {
+        font-weight: 700;
+        font-size: 0.95rem;
+        max-width: 120px;
+        line-height: 1.3;
+      }
+      .ft-news-form {
+        position: relative;
+        width: 320px;
+      }
+      .ft-news-form input {
+        width: 100%;
+        background: #fff;
+        border: none;
+        padding: 1.2rem 4rem 1.2rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+      }
+      .ft-news-form button {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        width: 45px;
+        height: 45px;
+        background: #c7e57c;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .ft-news-form button:hover {
+        transform: scale(1.1);
+        background: #a8cf45;
+      }
+
+      .ft-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .ft-copy {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .ft-legal {
+        display: flex;
+        gap: 2.5rem;
+      }
+      .ft-legal a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+      }
+      .ft-legal a:hover {
+        color: #c7e57c;
+      }
+
+      /* Decorative Pattern Assets (using SVGs for better quality) */
+      .ft-leaf-left {
+        position: absolute;
+        left: -50px;
+        bottom: 100px;
+        width: 200px;
+        height: 400px;
+        background: url('data:image/svg+xml,<svg width="100" height="200" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg"><path opacity="0.05" d="M50 0C22.3858 0 0 22.3858 0 50C0 77.6142 22.3858 100 50 100C77.6142 100 100 77.6142 100 50C100 22.3858 77.6142 0 50 0Z" fill="white"/><path opacity="0.03" d="M50 100C22.3858 100 0 122.386 0 150C0 177.614 22.3858 200 50 200C77.6142 200 100 177.614 100 150C100 122.386 77.6142 100 50 100Z" fill="white"/></svg>');
+        opacity: 0.5;
+        z-index: 1;
+      }
+      .ft-leaf-right {
+        position: absolute;
+        right: 0;
+        bottom: 50px;
+        width: 250px;
+        height: 250px;
+        background: url('data:image/svg+xml,<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"><circle opacity="0.03" cx="150" cy="150" r="100" fill="white"/><path opacity="0.05" d="M100 100C100 44.7715 144.772 0 200 0V200C144.772 200 100 155.228 100 100Z" fill="white"/></svg>');
+        z-index: 1;
+      }
+
+      @media (max-width: 1100px) {
+        .ft-grid { grid-template-columns: 1fr 1fr; gap: 3rem; }
+        .ft-trust-bar { flex-direction: column; gap: 2rem; border-radius: 30px; padding: 2rem; }
+        .ft-news-form { width: 100%; }
+        .ft-newsletter { width: 100%; justify-content: center; }
+      }
+      @media (max-width: 768px) {
+        .ft-grid { grid-template-columns: 1fr; }
+        .ft-bottom { flex-direction: column; gap: 1.5rem; text-align: center; }
+        .ft-legal { gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+      }
+    </style>
+
+    <script>
+      document.getElementById("menu-btn")?.addEventListener("click", () => {
+        const nav = document.getElementById("mobile-nav");
+        if (nav)
+          nav.style.display = nav.style.display === "flex" ? "none" : "flex";
+      });
+    </script>
+  </body>
 </html>

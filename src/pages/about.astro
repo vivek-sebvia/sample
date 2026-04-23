@@ -6,74 +6,763 @@ const primary = client.primaryColor || '#2d5a3d'
 
 <Layout title="About Us" description={`Learn about ${client.name} — trusted ${client.industry} professionals in ${client.city}, ${client.state}.`}>
 
-  <section style={`padding:4rem 1.5rem;background:${primary}12;text-align:center`}>
-    <div style="max-width:1200px;margin:0 auto">
-      <h1 style="font-size:2.5rem;font-weight:800;margin-bottom:1rem">About {client.name}</h1>
-      <p style="color:#6b7280;max-width:600px;margin:0 auto;font-size:1.05rem">
+  <!-- Hero Section -->
+  <section class="about-hero">
+    <div class="overlay"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">About {client.name}</h1>
+      <p class="hero-description">
         Trusted {client.industry} professionals proudly serving {client.city} and surrounding communities.
       </p>
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span class="separator">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </span>
+        <span class="current">About</span>
+      </div>
     </div>
   </section>
 
-  <section style="padding:4rem 1.5rem">
-    <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:3rem;align-items:center">
-      <div>
-        <h2 style="font-size:1.75rem;font-weight:700;margin-bottom:1.5rem">Who We Are</h2>
-        <p style="color:#4b5563;line-height:1.8;margin-bottom:1rem">
-          {client.name} is a locally owned and operated {client.industry} company serving {client.city}, {client.state} and the surrounding areas. We take pride in delivering high-quality work at fair prices.
-        </p>
-        <p style="color:#4b5563;line-height:1.8;margin-bottom:1rem">
-          Our team of licensed professionals brings years of hands-on experience to every project. Whether it's a small repair or a large installation, we treat every job with the same care and professionalism.
-        </p>
-        <p style="color:#4b5563;line-height:1.8;margin-bottom:2rem">
-          We are fully licensed and insured, giving our customers peace of mind on every job.
-        </p>
-        <div style="display:flex;gap:1rem;flex-wrap:wrap">
-          <a href="/contact" style={`background:${primary};color:#fff;padding:0.75rem 1.75rem;border-radius:10px;font-weight:600`}>Get Free Quote</a>
-          <a href={`tel:${client.phone}`} style={`border:2px solid ${primary};color:${primary};padding:0.75rem 1.75rem;border-radius:10px;font-weight:600`}>Call Us</a>
+  <style>
+    .about-hero {
+      position: relative;
+      background: url('/images/hero-bg.png') center/cover no-repeat;
+      padding: 180px 0 100px;
+      text-align: center;
+      color: white;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(10, 30, 15, 0.7), rgba(10, 30, 15, 0.5));
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    .hero-title {
+      font-size: clamp(3rem, 10vw, 5rem);
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+      text-transform: capitalize;
+    }
+    .hero-description {
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 700px;
+      margin: 20px auto 20px auto;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .breadcrumbs a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .breadcrumbs a:hover {
+      color: #c7e57c;
+    }
+    .separator {
+      color: #c7e57c;
+      display: flex;
+      align-items: center;
+    }
+    .current {
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .about-hero {
+        padding: 140px 0 60px;
+        min-height: 300px;
+      }
+      .hero-title {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+
+  <section class="who-we-are-section">
+    <div class="container who-we-are-grid">
+      <!-- Left Column -->
+      <div class="who-content">
+        <div class="pill-badge">
+          <div class="pill-dot"></div>
+          Who We Are
+        </div>
+        <h2 class="section-title">
+          Crafting Beautiful Outdoor Spaces With Passion & Precision
+        </h2>
+        <div class="section-desc-container">
+          <p class="section-desc">
+            {client.name} is a locally owned and operated {client.industry} company serving {client.city}, {client.state} and the surrounding areas. We take pride in delivering high-quality work at fair prices.
+          </p>
+          <p class="section-desc">
+            Our team of licensed professionals brings years of hands-on experience to every project. Whether it's a small repair or a large installation, we treat every job with the same care and professionalism.
+          </p>
+          <p class="section-desc">
+            We are fully licensed and insured, giving our customers peace of mind on every job.
+          </p>
+        </div>
+
+        <div class="feature-blocks">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="feature-text">
+              <h4>Reliable Support</h4>
+              <p>Dedicated assistance and timely service you can trust.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="feature-text">
+              <h4>Expert {client.industry}</h4>
+              <p>Licensed professionals delivering excellence since day one.</p>
+            </div>
+          </div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-        {[
-          { number: '600+', label: 'Projects Completed' },
-          { number: '10+', label: 'Years Experience' },
-          { number: '100%', label: 'Licensed & Insured' },
-          { number: '5★', label: 'Average Rating' },
-        ].map(stat => (
-          <div style="padding:1.5rem;border-radius:12px;border:1px solid #e5e7eb;text-align:center">
-            <div style={`font-size:2rem;font-weight:800;color:${primary};margin-bottom:0.35rem`}>{stat.number}</div>
-            <div style="font-size:0.875rem;color:#6b7280">{stat.label}</div>
+
+      <!-- Middle Column: Image -->
+      <div class="who-image-container">
+        <img src="/images/services/landscape-design.png" alt="Landscaping Professional" class="who-image" />
+        <div class="who-contact-overlay">
+          <div class="contact-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           </div>
-        ))}
+          <div class="contact-details">
+            <span class="contact-label">Contact Us:</span>
+            <span class="contact-number">{client.phone}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Stats Card -->
+      <div class="who-stats-card">
+        <div class="leaf-illustration">
+           <svg width="60" height="60" viewBox="0 0 24 24" fill="#89b449" opacity="0.2"><path d="M2.3 20.7L4.4 12c.1-.5.3-1 .7-1.4l11-11c.6-.6 1.5-.6 2.1 0l3.8 3.8c.6.6.6 1.5 0 2.1l-11 11c-.4.4-.9.6-1.4.7l-8.7 2.1c-.2 0-.4 0-.6-.1-.2-.1-.3-.3-.3-.5z"/></svg>
+        </div>
+        
+        <div class="exp-badge">
+          <div class="exp-number">10+</div>
+          <div class="exp-text">Years of Work Experience</div>
+        </div>
+
+        <ul class="check-list">
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            Modern & Smart Equipment
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            The Best Quality Materials
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            Affordable & Reasonable Pricing
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#89b449" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            24/7 Reliable Support
+          </li>
+        </ul>
+
+        <a href="/contact" class="who-btn">
+          Discover More
+          <div class="btn-arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </a>
       </div>
     </div>
   </section>
 
-  <section style="padding:4rem 1.5rem;background:#f9fafb">
-    <div style="max-width:1200px;margin:0 auto">
-      <h2 style="font-size:1.75rem;font-weight:700;text-align:center;margin-bottom:2.5rem">Our Values</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem">
-        {[
-          { icon: '🤝', title: 'Integrity', desc: 'We do what we say. Honest pricing, no surprises.' },
-          { icon: '⭐', title: 'Quality', desc: 'We use quality materials and stand behind our work.' },
-          { icon: '🏠', title: 'Community', desc: `${client.city} is our home. We care about our neighbors.` },
-        ].map(v => (
-          <div style="text-align:center;padding:2rem 1.5rem;background:#fff;border-radius:12px;border:1px solid #e5e7eb">
-            <div style="font-size:2.5rem;margin-bottom:0.75rem">{v.icon}</div>
-            <h3 style="font-weight:700;margin-bottom:0.5rem">{v.title}</h3>
-            <p style="color:#6b7280;font-size:0.875rem;line-height:1.6">{v.desc}</p>
-          </div>
-        ))}
+  <section class="stats-section">
+    <div class="container stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">600+</div>
+        <div class="stat-label">Projects Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">10+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Licensed & Insured</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">5★</div>
+        <div class="stat-label">Average Rating</div>
       </div>
     </div>
   </section>
 
-  <section style={`padding:4rem 1.5rem;background:${primary};color:#fff;text-align:center`}>
-    <div style="max-width:700px;margin:0 auto">
-      <h2 style="font-size:1.75rem;font-weight:700;margin-bottom:1rem">Ready to Work Together?</h2>
-      <p style="opacity:0.9;margin-bottom:1.5rem">Contact us today for your free estimate.</p>
-      <a href="/contact" style="background:#fff;color:#111;padding:0.75rem 2rem;border-radius:10px;font-weight:700">Get Free Quote</a>
+  <style>
+    .stats-section {
+      padding-bottom: 100px;
+      background: white;
+    }
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: white;
+      padding: 0.5rem 1.5rem;
+      border-radius: 100px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #006080;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      margin-bottom: 1.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: default;
+    }
+    .pill-badge:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+    }
+    .pill-dot {
+      width: 10px;
+      height: 10px;
+      background: #89b449;
+      border-radius: 50%;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .stat-card {
+      padding: 2.5rem 1.5rem;
+      background: white;
+      border-radius: 20px;
+      border: 1px solid #e5e7eb;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      border-color: #c7e57c;
+    }
+    .stat-number {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #1a3c26;
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 1rem;
+      color: #4a5a4a;
+      font-weight: 500;
+    }
+
+    @media (max-width: 992px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 576px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .who-we-are-section {
+      padding: 100px 0;
+      background: white;
+    }
+    .who-we-are-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 0.8fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .section-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #0a1e0f;
+      line-height: 1.1;
+      margin: 1.5rem 0;
+      letter-spacing: -0.02em;
+    }
+    .section-desc-container {
+      margin-bottom: 2.5rem;
+    }
+    .section-desc {
+      color: #4a5a4a;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .section-desc:last-child {
+      margin-bottom: 0;
+    }
+    .feature-blocks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .feature-item {
+      display: flex;
+      gap: 1rem;
+    }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: #f4f9e8;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .feature-text h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: #0a1e0f;
+    }
+    .feature-text p {
+      font-size: 0.9rem;
+      color: #4a5a4a;
+      line-height: 1.5;
+    }
+    
+    .who-image-container {
+      position: relative;
+      border-radius: 32px;
+      overflow: hidden;
+      height: 550px;
+    }
+    .who-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .who-contact-overlay {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0a1e0f;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 85%;
+      color: white;
+    }
+    .contact-icon {
+      width: 40px;
+      height: 40px;
+      background: #c7e57c;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a1e0f;
+    }
+    .contact-label {
+      display: block;
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+    .contact-number {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .who-stats-card {
+      background: #fcfdfa;
+      padding: 3rem 2rem;
+      border-radius: 32px;
+      position: relative;
+      border: 1px solid #f0f4e8;
+    }
+    .exp-badge {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .exp-number {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #0a1e0f;
+      line-height: 1;
+    }
+    .exp-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #4a5a4a;
+      max-width: 100px;
+    }
+    .check-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 2.5rem 0;
+    }
+    .check-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0a1e0f;
+    }
+    .who-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #c7e57c;
+      color: #0a1e0f;
+      padding: 1rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+    .who-btn:hover {
+      background: #b8d96a;
+      transform: translateY(-2px);
+    }
+    .btn-arrow {
+      width: 32px;
+      height: 32px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cta-section {
+      position: relative;
+      padding: 140px 0 100px;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/hero-bg.png') center/cover no-repeat;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+    .cta-container {
+      position: relative;
+      z-index: 5;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .cta-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .cta-desc {
+      font-size: 1.2rem;
+      opacity: 0.95;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    .cta-primary-btn {
+      background: #a8cf45;
+      color: white;
+      padding: 1.1rem 2.8rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(168, 207, 69, 0.3);
+    }
+    .cta-primary-btn:hover {
+      background: #96bb3d;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(168, 207, 69, 0.4);
+    }
+    .cta-phone-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.5rem;
+      transition: opacity 0.3s ease;
+    }
+    .cta-phone-link:hover {
+      opacity: 0.8;
+    }
+    .phone-icon-circle {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Decorative Cutouts */
+    .cta-decoration-left {
+      position: absolute;
+      bottom: -20px;
+      left: -2%;
+      width: 420px;
+      z-index: 2;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+    }
+    .cta-decoration-right {
+      position: absolute;
+      bottom: -40px;
+      right: -2%;
+      width: 380px;
+      z-index: 2;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+    }
+    .cta-decoration-left img, .cta-decoration-right img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* Grass Border at bottom */
+    .cta-grass-border {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: #0a1e0f;
+      z-index: 10;
+      clip-path: polygon(0% 100%, 100% 100%, 100% 30%, 98% 45%, 96% 25%, 94% 40%, 92% 20%, 90% 35%, 88% 15%, 86% 30%, 84% 10%, 82% 25%, 80% 5%, 78% 20%, 76% 0%, 74% 15%, 72% 0%, 70% 15%, 68% 5%, 66% 20%, 64% 10%, 62% 25%, 60% 15%, 58% 30%, 56% 15%, 54% 35%, 52% 20%, 50% 40%, 48% 25%, 46% 45%, 44% 30%, 42% 50%, 40% 35%, 38% 55%, 36% 40%, 34% 60%, 32% 45%, 30% 65%, 28% 50%, 26% 70%, 24% 55%, 22% 75%, 20% 60%, 18% 80%, 16% 65%, 14% 85%, 12% 70%, 10% 90%, 8% 75%, 6% 95%, 4% 80%, 2% 100%, 0% 85%);
+    }
+
+    @media (max-width: 1200px) {
+      .cta-decoration-left { width: 300px; }
+      .cta-decoration-right { width: 250px; }
+    }
+    @media (max-width: 992px) {
+      .cta-decoration-left, .cta-decoration-right {
+        display: none;
+      }
+      .cta-section { padding: 80px 0; }
+      .cta-actions {
+        flex-direction: column;
+        gap: 2rem;
+      }
+    }
+  </style>
+
+  <section class="values-section">
+    <div class="container">
+      <div class="values-header">
+        <div class="pill-badge" style="margin: 0 auto 1.5rem;">
+          <div class="pill-dot"></div>
+          Our Philosophy
+        </div>
+        <h2 class="values-title">Values That Define Us</h2>
+        <p class="values-subtitle">
+          At {client.name}, we believe in more than just landscaping — we believe in building lasting relationships with our community.
+        </p>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon-container">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 class="value-card-title">Integrity</h3>
+          <p class="value-card-desc">We do what we say. Honest pricing, no surprises, and a commitment to transparency in every project.</p>
+          <div class="value-accent"></div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-icon-container">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3 class="value-card-title">Quality</h3>
+          <p class="value-card-desc">We use only the finest materials and stand behind our work with a 100% satisfaction guarantee.</p>
+          <div class="value-accent"></div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-icon-container">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <h3 class="value-card-title">Community</h3>
+          <p class="value-card-desc">{client.city} is our home. We take pride in enhancing the beauty of our local neighborhoods and caring for our neighbors.</p>
+          <div class="value-accent"></div>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <style>
+    .values-section {
+      padding: 120px 0;
+      background: #fcfdfa;
+      position: relative;
+    }
+    .values-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 4rem;
+    }
+    .values-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #0a1e0f;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .values-subtitle {
+      font-size: 1.1rem;
+      color: #4a5a4a;
+      line-height: 1.7;
+    }
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .value-card {
+      background: white;
+      padding: 3.5rem 2.5rem;
+      border-radius: 32px;
+      border: 1px solid #f0f4e8;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+    .value-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(137, 180, 73, 0.1);
+      border-color: #c7e57c;
+    }
+    .value-icon-container {
+      width: 80px;
+      height: 80px;
+      background: #f4f9e8;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+      color: #89b449;
+      transition: all 0.3s ease;
+    }
+    .value-card:hover .value-icon-container {
+      background: #89b449;
+      color: white;
+      transform: rotate(-10deg);
+    }
+    .value-card-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0a1e0f;
+      margin-bottom: 1.25rem;
+    }
+    .value-card-desc {
+      font-size: 1rem;
+      color: #4a5a4a;
+      line-height: 1.7;
+      opacity: 0.9;
+    }
+    .value-accent {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: #c7e57c;
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+      transform-origin: left;
+    }
+    .value-card:hover .value-accent {
+      transform: scaleX(1);
+    }
+
+    @media (max-width: 992px) {
+      .values-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .values-section { padding: 80px 0; }
+    }
+  </style>
+
+  <section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="container cta-container">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to Work Together?</h2>
+        <p class="cta-desc">
+          Contact us today for your free estimate. Our team in {client.city} is ready to bring your vision to life.
+        </p>
+        <div class="cta-actions">
+          <a href="/contact" class="cta-primary-btn">Get Free Quote</a>
+          <a href={`tel:${client.phone}`} class="cta-phone-link">
+            <div class="phone-icon-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <span class="phone-text">{client.phone}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Decorative Elements -->
+    <div class="cta-decoration-left">
+      <img src="/images/services/landscape-design.png" alt="" />
+    </div>
+    <div class="cta-decoration-right">
+       <img src="/images/services/garden-installation.png" alt="" />
+    </div>
+    <div class="cta-grass-border"></div>
   </section>
 
 </Layout>
